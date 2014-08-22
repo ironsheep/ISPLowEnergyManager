@@ -1,0 +1,609 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		DC42941C19A7EC5B00763CF3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC42941B19A7EC5B00763CF3 /* Foundation.framework */; };
+		DC42941E19A7EC5B00763CF3 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC42941D19A7EC5B00763CF3 /* CoreGraphics.framework */; };
+		DC42942019A7EC5B00763CF3 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC42941F19A7EC5B00763CF3 /* UIKit.framework */; };
+		DC42942619A7EC5B00763CF3 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DC42942419A7EC5B00763CF3 /* InfoPlist.strings */; };
+		DC42942819A7EC5B00763CF3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DC42942719A7EC5B00763CF3 /* main.m */; };
+		DC42942C19A7EC5B00763CF3 /* LEDAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DC42942B19A7EC5B00763CF3 /* LEDAppDelegate.m */; };
+		DC42942F19A7EC5B00763CF3 /* Main_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DC42942D19A7EC5B00763CF3 /* Main_iPhone.storyboard */; };
+		DC42943219A7EC5B00763CF3 /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DC42943019A7EC5B00763CF3 /* Main_iPad.storyboard */; };
+		DC42943A19A7EC5B00763CF3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DC42943919A7EC5B00763CF3 /* Images.xcassets */; };
+		DC42944119A7EC5B00763CF3 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC42944019A7EC5B00763CF3 /* XCTest.framework */; };
+		DC42944219A7EC5B00763CF3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC42941B19A7EC5B00763CF3 /* Foundation.framework */; };
+		DC42944319A7EC5B00763CF3 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC42941F19A7EC5B00763CF3 /* UIKit.framework */; };
+		DC42944B19A7EC5B00763CF3 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DC42944919A7EC5B00763CF3 /* InfoPlist.strings */; };
+		DC42944D19A7EC5B00763CF3 /* LowEnergyDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = DC42944C19A7EC5B00763CF3 /* LowEnergyDemoTests.m */; };
+		DC42946619A7ECE900763CF3 /* CBCharacteristic+MyCharacteristics.m in Sources */ = {isa = PBXBuildFile; fileRef = DC42945819A7ECE800763CF3 /* CBCharacteristic+MyCharacteristics.m */; };
+		DC42946719A7ECE900763CF3 /* CBService+MyServices.m in Sources */ = {isa = PBXBuildFile; fileRef = DC42945A19A7ECE800763CF3 /* CBService+MyServices.m */; };
+		DC42946819A7ECE900763CF3 /* LEDPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DC42945D19A7ECE800763CF3 /* LEDPageViewController.m */; };
+		DC42946919A7ECE900763CF3 /* LEDPayloadUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = DC42945F19A7ECE800763CF3 /* LEDPayloadUtils.m */; };
+		DC42946A19A7ECE900763CF3 /* LEDTISensorTag.m in Sources */ = {isa = PBXBuildFile; fileRef = DC42946119A7ECE800763CF3 /* LEDTISensorTag.m */; };
+		DC42946B19A7ECE900763CF3 /* LEDAccelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DC42946319A7ECE800763CF3 /* LEDAccelViewController.m */; };
+		DC42946C19A7ECE900763CF3 /* LEDTempsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DC42946519A7ECE900763CF3 /* LEDTempsViewController.m */; };
+		DC42947919A7EEEC00763CF3 /* libISPLowEnergyManager.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DC42947419A7EE9700763CF3 /* libISPLowEnergyManager.a */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		DC42944419A7EC5B00763CF3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DC42941019A7EC5B00763CF3 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DC42941719A7EC5B00763CF3;
+			remoteInfo = LowEnergyDemo;
+		};
+		DC42947319A7EE9700763CF3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DC42946E19A7EE9700763CF3 /* ISPLowEnergyManager.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = DC4293CB19A7E96800763CF3;
+			remoteInfo = ISPLowEnergyManager;
+		};
+		DC42947519A7EE9700763CF3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DC42946E19A7EE9700763CF3 /* ISPLowEnergyManager.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = DC4293DB19A7E96800763CF3;
+			remoteInfo = ISPLowEnergyManagerTests;
+		};
+		DC42947719A7EEB400763CF3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DC42946E19A7EE9700763CF3 /* ISPLowEnergyManager.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = DC4293CA19A7E96800763CF3;
+			remoteInfo = ISPLowEnergyManager;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		DC42941819A7EC5B00763CF3 /* LowEnergyDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LowEnergyDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DC42941B19A7EC5B00763CF3 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		DC42941D19A7EC5B00763CF3 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		DC42941F19A7EC5B00763CF3 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		DC42942319A7EC5B00763CF3 /* LowEnergyDemo-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "LowEnergyDemo-Info.plist"; sourceTree = "<group>"; };
+		DC42942519A7EC5B00763CF3 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		DC42942719A7EC5B00763CF3 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		DC42942919A7EC5B00763CF3 /* LowEnergyDemo-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "LowEnergyDemo-Prefix.pch"; sourceTree = "<group>"; };
+		DC42942A19A7EC5B00763CF3 /* LEDAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LEDAppDelegate.h; sourceTree = "<group>"; };
+		DC42942B19A7EC5B00763CF3 /* LEDAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LEDAppDelegate.m; sourceTree = "<group>"; };
+		DC42942E19A7EC5B00763CF3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPhone.storyboard; sourceTree = "<group>"; };
+		DC42943119A7EC5B00763CF3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPad.storyboard; sourceTree = "<group>"; };
+		DC42943919A7EC5B00763CF3 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		DC42943F19A7EC5B00763CF3 /* LowEnergyDemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LowEnergyDemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		DC42944019A7EC5B00763CF3 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		DC42944819A7EC5B00763CF3 /* LowEnergyDemoTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "LowEnergyDemoTests-Info.plist"; sourceTree = "<group>"; };
+		DC42944A19A7EC5B00763CF3 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		DC42944C19A7EC5B00763CF3 /* LowEnergyDemoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LowEnergyDemoTests.m; sourceTree = "<group>"; };
+		DC42945719A7ECE800763CF3 /* CBCharacteristic+MyCharacteristics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CBCharacteristic+MyCharacteristics.h"; sourceTree = "<group>"; };
+		DC42945819A7ECE800763CF3 /* CBCharacteristic+MyCharacteristics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CBCharacteristic+MyCharacteristics.m"; sourceTree = "<group>"; };
+		DC42945919A7ECE800763CF3 /* CBService+MyServices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CBService+MyServices.h"; sourceTree = "<group>"; };
+		DC42945A19A7ECE800763CF3 /* CBService+MyServices.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CBService+MyServices.m"; sourceTree = "<group>"; };
+		DC42945B19A7ECE800763CF3 /* LEDGattConsts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LEDGattConsts.h; sourceTree = "<group>"; };
+		DC42945C19A7ECE800763CF3 /* LEDPageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LEDPageViewController.h; sourceTree = "<group>"; };
+		DC42945D19A7ECE800763CF3 /* LEDPageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LEDPageViewController.m; sourceTree = "<group>"; };
+		DC42945E19A7ECE800763CF3 /* LEDPayloadUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LEDPayloadUtils.h; sourceTree = "<group>"; };
+		DC42945F19A7ECE800763CF3 /* LEDPayloadUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LEDPayloadUtils.m; sourceTree = "<group>"; };
+		DC42946019A7ECE800763CF3 /* LEDTISensorTag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LEDTISensorTag.h; sourceTree = "<group>"; };
+		DC42946119A7ECE800763CF3 /* LEDTISensorTag.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LEDTISensorTag.m; sourceTree = "<group>"; };
+		DC42946219A7ECE800763CF3 /* LEDAccelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LEDAccelViewController.h; sourceTree = "<group>"; };
+		DC42946319A7ECE800763CF3 /* LEDAccelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LEDAccelViewController.m; sourceTree = "<group>"; };
+		DC42946419A7ECE900763CF3 /* LEDTempsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LEDTempsViewController.h; sourceTree = "<group>"; };
+		DC42946519A7ECE900763CF3 /* LEDTempsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LEDTempsViewController.m; sourceTree = "<group>"; };
+		DC42946E19A7EE9700763CF3 /* ISPLowEnergyManager.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ISPLowEnergyManager.xcodeproj; path = ../ISPLowEnergyManager/ISPLowEnergyManager.xcodeproj; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		DC42941519A7EC5B00763CF3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC42947919A7EEEC00763CF3 /* libISPLowEnergyManager.a in Frameworks */,
+				DC42941E19A7EC5B00763CF3 /* CoreGraphics.framework in Frameworks */,
+				DC42942019A7EC5B00763CF3 /* UIKit.framework in Frameworks */,
+				DC42941C19A7EC5B00763CF3 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DC42943C19A7EC5B00763CF3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC42944119A7EC5B00763CF3 /* XCTest.framework in Frameworks */,
+				DC42944319A7EC5B00763CF3 /* UIKit.framework in Frameworks */,
+				DC42944219A7EC5B00763CF3 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		DC42940F19A7EC5B00763CF3 = {
+			isa = PBXGroup;
+			children = (
+				DC42946E19A7EE9700763CF3 /* ISPLowEnergyManager.xcodeproj */,
+				DC42942119A7EC5B00763CF3 /* LowEnergyDemo */,
+				DC42944619A7EC5B00763CF3 /* LowEnergyDemoTests */,
+				DC42941A19A7EC5B00763CF3 /* Frameworks */,
+				DC42941919A7EC5B00763CF3 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		DC42941919A7EC5B00763CF3 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DC42941819A7EC5B00763CF3 /* LowEnergyDemo.app */,
+				DC42943F19A7EC5B00763CF3 /* LowEnergyDemoTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		DC42941A19A7EC5B00763CF3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				DC42941B19A7EC5B00763CF3 /* Foundation.framework */,
+				DC42941D19A7EC5B00763CF3 /* CoreGraphics.framework */,
+				DC42941F19A7EC5B00763CF3 /* UIKit.framework */,
+				DC42944019A7EC5B00763CF3 /* XCTest.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		DC42942119A7EC5B00763CF3 /* LowEnergyDemo */ = {
+			isa = PBXGroup;
+			children = (
+				DC42945619A7ECE800763CF3 /* DVC-TISensorTag */,
+				DC42943919A7EC5B00763CF3 /* Images.xcassets */,
+				DC42946219A7ECE800763CF3 /* LEDAccelViewController.h */,
+				DC42946319A7ECE800763CF3 /* LEDAccelViewController.m */,
+				DC42942A19A7EC5B00763CF3 /* LEDAppDelegate.h */,
+				DC42942B19A7EC5B00763CF3 /* LEDAppDelegate.m */,
+				DC42946419A7ECE900763CF3 /* LEDTempsViewController.h */,
+				DC42946519A7ECE900763CF3 /* LEDTempsViewController.m */,
+				DC42946D19A7ECF800763CF3 /* Storyboard */,
+				DC42942219A7EC5B00763CF3 /* Supporting Files */,
+			);
+			path = LowEnergyDemo;
+			sourceTree = "<group>";
+		};
+		DC42942219A7EC5B00763CF3 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				DC42942319A7EC5B00763CF3 /* LowEnergyDemo-Info.plist */,
+				DC42942419A7EC5B00763CF3 /* InfoPlist.strings */,
+				DC42942719A7EC5B00763CF3 /* main.m */,
+				DC42942919A7EC5B00763CF3 /* LowEnergyDemo-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		DC42944619A7EC5B00763CF3 /* LowEnergyDemoTests */ = {
+			isa = PBXGroup;
+			children = (
+				DC42944C19A7EC5B00763CF3 /* LowEnergyDemoTests.m */,
+				DC42944719A7EC5B00763CF3 /* Supporting Files */,
+			);
+			path = LowEnergyDemoTests;
+			sourceTree = "<group>";
+		};
+		DC42944719A7EC5B00763CF3 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				DC42944819A7EC5B00763CF3 /* LowEnergyDemoTests-Info.plist */,
+				DC42944919A7EC5B00763CF3 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		DC42945619A7ECE800763CF3 /* DVC-TISensorTag */ = {
+			isa = PBXGroup;
+			children = (
+				DC42945719A7ECE800763CF3 /* CBCharacteristic+MyCharacteristics.h */,
+				DC42945819A7ECE800763CF3 /* CBCharacteristic+MyCharacteristics.m */,
+				DC42945919A7ECE800763CF3 /* CBService+MyServices.h */,
+				DC42945A19A7ECE800763CF3 /* CBService+MyServices.m */,
+				DC42945B19A7ECE800763CF3 /* LEDGattConsts.h */,
+				DC42945C19A7ECE800763CF3 /* LEDPageViewController.h */,
+				DC42945D19A7ECE800763CF3 /* LEDPageViewController.m */,
+				DC42945E19A7ECE800763CF3 /* LEDPayloadUtils.h */,
+				DC42945F19A7ECE800763CF3 /* LEDPayloadUtils.m */,
+				DC42946019A7ECE800763CF3 /* LEDTISensorTag.h */,
+				DC42946119A7ECE800763CF3 /* LEDTISensorTag.m */,
+			);
+			path = "DVC-TISensorTag";
+			sourceTree = "<group>";
+		};
+		DC42946D19A7ECF800763CF3 /* Storyboard */ = {
+			isa = PBXGroup;
+			children = (
+				DC42942D19A7EC5B00763CF3 /* Main_iPhone.storyboard */,
+				DC42943019A7EC5B00763CF3 /* Main_iPad.storyboard */,
+			);
+			name = Storyboard;
+			sourceTree = "<group>";
+		};
+		DC42946F19A7EE9700763CF3 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DC42947419A7EE9700763CF3 /* libISPLowEnergyManager.a */,
+				DC42947619A7EE9700763CF3 /* ISPLowEnergyManagerTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		DC42941719A7EC5B00763CF3 /* LowEnergyDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DC42945019A7EC5B00763CF3 /* Build configuration list for PBXNativeTarget "LowEnergyDemo" */;
+			buildPhases = (
+				DC42941419A7EC5B00763CF3 /* Sources */,
+				DC42941519A7EC5B00763CF3 /* Frameworks */,
+				DC42941619A7EC5B00763CF3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DC42947819A7EEB400763CF3 /* PBXTargetDependency */,
+			);
+			name = LowEnergyDemo;
+			productName = LowEnergyDemo;
+			productReference = DC42941819A7EC5B00763CF3 /* LowEnergyDemo.app */;
+			productType = "com.apple.product-type.application";
+		};
+		DC42943E19A7EC5B00763CF3 /* LowEnergyDemoTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DC42945319A7EC5B00763CF3 /* Build configuration list for PBXNativeTarget "LowEnergyDemoTests" */;
+			buildPhases = (
+				DC42943B19A7EC5B00763CF3 /* Sources */,
+				DC42943C19A7EC5B00763CF3 /* Frameworks */,
+				DC42943D19A7EC5B00763CF3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DC42944519A7EC5B00763CF3 /* PBXTargetDependency */,
+			);
+			name = LowEnergyDemoTests;
+			productName = LowEnergyDemoTests;
+			productReference = DC42943F19A7EC5B00763CF3 /* LowEnergyDemoTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		DC42941019A7EC5B00763CF3 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = LED;
+				LastUpgradeCheck = 0510;
+				ORGANIZATIONNAME = "Iron Sheep Productions, LLC";
+				TargetAttributes = {
+					DC42943E19A7EC5B00763CF3 = {
+						TestTargetID = DC42941719A7EC5B00763CF3;
+					};
+				};
+			};
+			buildConfigurationList = DC42941319A7EC5B00763CF3 /* Build configuration list for PBXProject "LowEnergyDemo" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = DC42940F19A7EC5B00763CF3;
+			productRefGroup = DC42941919A7EC5B00763CF3 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = DC42946F19A7EE9700763CF3 /* Products */;
+					ProjectRef = DC42946E19A7EE9700763CF3 /* ISPLowEnergyManager.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				DC42941719A7EC5B00763CF3 /* LowEnergyDemo */,
+				DC42943E19A7EC5B00763CF3 /* LowEnergyDemoTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		DC42947419A7EE9700763CF3 /* libISPLowEnergyManager.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libISPLowEnergyManager.a;
+			remoteRef = DC42947319A7EE9700763CF3 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		DC42947619A7EE9700763CF3 /* ISPLowEnergyManagerTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = ISPLowEnergyManagerTests.xctest;
+			remoteRef = DC42947519A7EE9700763CF3 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		DC42941619A7EC5B00763CF3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC42943219A7EC5B00763CF3 /* Main_iPad.storyboard in Resources */,
+				DC42943A19A7EC5B00763CF3 /* Images.xcassets in Resources */,
+				DC42942F19A7EC5B00763CF3 /* Main_iPhone.storyboard in Resources */,
+				DC42942619A7EC5B00763CF3 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DC42943D19A7EC5B00763CF3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC42944B19A7EC5B00763CF3 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		DC42941419A7EC5B00763CF3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC42946719A7ECE900763CF3 /* CBService+MyServices.m in Sources */,
+				DC42942C19A7EC5B00763CF3 /* LEDAppDelegate.m in Sources */,
+				DC42946919A7ECE900763CF3 /* LEDPayloadUtils.m in Sources */,
+				DC42942819A7EC5B00763CF3 /* main.m in Sources */,
+				DC42946819A7ECE900763CF3 /* LEDPageViewController.m in Sources */,
+				DC42946A19A7ECE900763CF3 /* LEDTISensorTag.m in Sources */,
+				DC42946619A7ECE900763CF3 /* CBCharacteristic+MyCharacteristics.m in Sources */,
+				DC42946C19A7ECE900763CF3 /* LEDTempsViewController.m in Sources */,
+				DC42946B19A7ECE900763CF3 /* LEDAccelViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DC42943B19A7EC5B00763CF3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC42944D19A7EC5B00763CF3 /* LowEnergyDemoTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		DC42944519A7EC5B00763CF3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DC42941719A7EC5B00763CF3 /* LowEnergyDemo */;
+			targetProxy = DC42944419A7EC5B00763CF3 /* PBXContainerItemProxy */;
+		};
+		DC42947819A7EEB400763CF3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ISPLowEnergyManager;
+			targetProxy = DC42947719A7EEB400763CF3 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		DC42942419A7EC5B00763CF3 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DC42942519A7EC5B00763CF3 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		DC42942D19A7EC5B00763CF3 /* Main_iPhone.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DC42942E19A7EC5B00763CF3 /* Base */,
+			);
+			name = Main_iPhone.storyboard;
+			sourceTree = "<group>";
+		};
+		DC42943019A7EC5B00763CF3 /* Main_iPad.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DC42943119A7EC5B00763CF3 /* Base */,
+			);
+			name = Main_iPad.storyboard;
+			sourceTree = "<group>";
+		};
+		DC42944919A7EC5B00763CF3 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DC42944A19A7EC5B00763CF3 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		DC42944E19A7EC5B00763CF3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		DC42944F19A7EC5B00763CF3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		DC42945119A7EC5B00763CF3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				FRAMEWORK_SEARCH_PATHS = "$(CONFIGURATION_BUILD_DIR)";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "LowEnergyDemo/LowEnergyDemo-Prefix.pch";
+				INFOPLIST_FILE = "LowEnergyDemo/LowEnergyDemo-Info.plist";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		DC42945219A7EC5B00763CF3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				FRAMEWORK_SEARCH_PATHS = "$(CONFIGURATION_BUILD_DIR)";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "LowEnergyDemo/LowEnergyDemo-Prefix.pch";
+				INFOPLIST_FILE = "LowEnergyDemo/LowEnergyDemo-Info.plist";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		DC42945419A7EC5B00763CF3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/LowEnergyDemo.app/LowEnergyDemo";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "LowEnergyDemo/LowEnergyDemo-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "LowEnergyDemoTests/LowEnergyDemoTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Debug;
+		};
+		DC42945519A7EC5B00763CF3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/LowEnergyDemo.app/LowEnergyDemo";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "LowEnergyDemo/LowEnergyDemo-Prefix.pch";
+				INFOPLIST_FILE = "LowEnergyDemoTests/LowEnergyDemoTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		DC42941319A7EC5B00763CF3 /* Build configuration list for PBXProject "LowEnergyDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DC42944E19A7EC5B00763CF3 /* Debug */,
+				DC42944F19A7EC5B00763CF3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DC42945019A7EC5B00763CF3 /* Build configuration list for PBXNativeTarget "LowEnergyDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DC42945119A7EC5B00763CF3 /* Debug */,
+				DC42945219A7EC5B00763CF3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DC42945319A7EC5B00763CF3 /* Build configuration list for PBXNativeTarget "LowEnergyDemoTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DC42945419A7EC5B00763CF3 /* Debug */,
+				DC42945519A7EC5B00763CF3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = DC42941019A7EC5B00763CF3 /* Project object */;
+}

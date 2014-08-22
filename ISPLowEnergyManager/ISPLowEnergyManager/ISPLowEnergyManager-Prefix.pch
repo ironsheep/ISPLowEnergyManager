@@ -1,0 +1,26 @@
+//
+//  Prefix header
+//
+//  The contents of this file are implicitly included at the beginning of every source file.
+//
+
+#ifdef __OBJC__
+    #import <Foundation/Foundation.h>
+
+    // BLog - Bare log (no prefix)
+    // CLog - Clean log (simple NSLog but debug only)
+    // DLog is almost a drop-in replacement for NSLog
+    // DLog();
+    // DLog(@"here");
+    // DLog(@"value: %d", x);
+    // Unfortunately this doesn't work DLog(aStringVariable); you have to do this instead DLog(@"%@", aStringVariable);
+    #ifdef DEBUG
+    #   define BLog(msg) NSLog(@"%@",msg);
+    #	define CLog(fmt, ...) NSLog(fmt, ##__VA_ARGS__);
+    #	define DLog(fmt, ...) NSLog((@"%s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
+    #else
+    #	define BLog(...)
+    #	define CLog(...)
+    #	define DLog(...)
+    #endif
+#endif
