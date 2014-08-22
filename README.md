@@ -1,4 +1,4 @@
-# ISLowEnergyManager
+# ISPLowEnergyManager
 
 ## A pattern for Bluetooth Low Energy Applications - with Demos
 
