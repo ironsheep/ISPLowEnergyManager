@@ -183,7 +183,7 @@ NSString *kCHARACTERISTIC_VALUE_UPDATED = @"CHARACTERISTIC_VALUE_UPDATED";
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(discoverBLEDeviceSuccess:) name:kNOTIFICATION_ADD_BLE_DEVICE object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(discoverBLEDeviceServicesSuccess:) name:kNOTIFICATION_DEVICE_SERVICES_DISCOVERED object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(discoverBLEDeviceCharacteristicsSuccess:) name:kNOTIFICATION_DEVICE_CHARACTERISTICS_DISCOVERED object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(discoverBLEDeviceCharacteristicDescriptorsSuccess:) name:kNOTIFICATION_DEVICE_DESCRIPTORS_DISCOVERED object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(discoverBLEDeviceCharacteristicDescriptorsSuccess:) name:kNOTIFICATION_DEVICE_DISCOVERED_CHARACTERISTIC_DESCRIPTORS object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateValueForCharacteristic:) name:kNOTIFICATION_DEVICE_UPDATED_CHARACTERISTIC_VALUE object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateNotifyStateForCharacteristic:) name:kNOTIFICATION_DEVICE_UPDATED_CHARACTERISTIC_NOTIF_STATE object:nil];
     }
@@ -758,7 +758,7 @@ NSString *kCHARACTERISTIC_VALUE_UPDATED = @"CHARACTERISTIC_VALUE_UPDATED";
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNOTIFICATION_ADD_BLE_DEVICE object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNOTIFICATION_DEVICE_SERVICES_DISCOVERED object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNOTIFICATION_DEVICE_CHARACTERISTICS_DISCOVERED object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNOTIFICATION_DEVICE_DESCRIPTORS_DISCOVERED object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNOTIFICATION_DEVICE_DISCOVERED_CHARACTERISTIC_DESCRIPTORS object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNOTIFICATION_DEVICE_UPDATED_CHARACTERISTIC_VALUE object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNOTIFICATION_DEVICE_UPDATED_CHARACTERISTIC_NOTIF_STATE object:nil];
 }

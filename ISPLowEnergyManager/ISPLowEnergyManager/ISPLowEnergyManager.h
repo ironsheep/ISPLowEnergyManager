@@ -2,17 +2,14 @@
 //  ISPLowEnergyManager.h
 //  ISPLowEnergyManager
 //
-//  Created by Stephen M Moraco on 08/22/14.
-//  Copyright (c) 2014 Iron Sheep Productions, LLC. All rights reserved.
+//  Created by Stephen M Moraco on 03/12/13.
+//  Copyright (c) 2013 Iron Sheep Productions, LLC. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
+#import <CoreBluetooth/CoreBluetooth.h>
 
-@protocol CBCentralManagerDelegate;
-@protocol CBPeripheralDelegate;
-
-@class CBService;
-@class CBPeripheral;
+#pragma mark CLASS ISPLowEnergyManager - PUBLIC Interface 
 
 @interface ISPLowEnergyManager : NSObject <CBCentralManagerDelegate, CBPeripheralDelegate> {
     
@@ -21,40 +18,27 @@
 #pragma mark -- PUBLIC PROPERTIES
 
 @property (strong, nonatomic) NSString *searchUUID;
+@property (assign, nonatomic) NSTimeInterval searchDurationInSeconds;
+@property (assign, nonatomic) NSUInteger numberOfDevicesToLocate;
+@property (strong, nonatomic, readonly) NSArray *peripherals;
+
 
 #pragma mark -- CLASS METHODS
 
 + (id)sharedInstance;
 
-// CLASS UTILITY Methods
-// compose a Characteristic-Descriptor key
-+(NSString *)keyForDescriptor:(CBDescriptor *)descriptor ofCharacteristic:(CBCharacteristic *)characteristic;
-
-// break apart a Characteristic-Descriptor key
-+(void)UUIDsForDescriptorKey:(NSString *)descriptorKey characteristicKeyPortion:(NSString **)characteristicUUIDString descriptorKeyPortion:(NSString **)descriptorUUIDString;
-+(NSString *)characteristicUUIDStringForDescriptorKey:(NSString *)descriptorKey;
-+(NSString *)descriptorUUIDStringForDescriptorKey:(NSString *)descriptorKey;
 
 #pragma mark -- INSTANCE METHODS
 
-// locate Bluetooth Devices
-//  -- look for a single device (nil==all devices)
+- (void)enableScanningWhenReady;
 - (void)startScanningForUUIDString:(NSString *)uuidString;
-//  -- look for two or more devices (nil==all devices)
-- (void)startScanningForListOfUUIDs:(NSArray *)uuidList;
-
-// stop looking for devices
 - (void)stopScanning;
 
-// connect to a specific device
 - (void)connectPeripheral:(CBPeripheral*)peripheral;
-
-// disconnect from the device
 - (void)disconnectPeripheral:(CBPeripheral*)peripheral;
 
-// locate all services, included services, service characteristics and characterstic-descriptors for a device
 - (void)exploreConnectedPeripheralService:(CBService *)service;
 
-
-
+- (NSNumber *)rssiForPeripheral:(CBPeripheral*)peripheral;
 @end
+

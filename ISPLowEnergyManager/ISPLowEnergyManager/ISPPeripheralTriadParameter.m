@@ -1,5 +1,5 @@
 //
-//  ISPPeripheralTriadParameter.m
+//  LEPPeripheralTriadParameter.m
 //  ISPLowEnergyManager
 //
 //  Created by Stephen M Moraco on 03/16/13.

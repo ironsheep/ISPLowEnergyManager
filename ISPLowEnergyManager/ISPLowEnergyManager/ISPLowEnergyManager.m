@@ -2,32 +2,30 @@
 //  ISPLowEnergyManager.m
 //  ISPLowEnergyManager
 //
-//  Created by Stephen M Moraco on 08/22/14.
-//  Copyright (c) 2014 Iron Sheep Productions, LLC. All rights reserved.
+//  Created by Stephen M Moraco on 03/12/13.
+//  Copyright (c) 2013 Iron Sheep Productions, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-#import <CoreBluetooth/CoreBluetooth.h>
-#import "CBService+Methods.h"
-#import "CBPeripheral+Methods.h"
-#import "CBUUID+Methods.h"
-
 #import "ISPLowEnergyManager.h"
-#import "ISPNotificationConsts.h"
+#import "CBPeripheral+Methods.h"
+#import "CBService+Methods.h"
 #import "ISPPeripheralTriadParameter.h"
+#import "CustomAlertView.h"
+#import "ISPNotificationConsts.h"
 
 
 #pragma mark CLASS ISPLowEnergyManager - PRIVATE Interface
 
+
 @interface ISPLowEnergyManager () {
 	BOOL    m_bPendingInit;
-    NSInteger m_nMaxServices;
+    NSUInteger m_nMaxServices;
     BOOL m_bDiscoveringIncludedServices;
-    NSInteger m_nNextServiceToCheck;
+    NSUInteger m_nNextServiceToCheck;
     BOOL m_bDiscoveringCharacteristics;
-    NSInteger m_nNextServiceCharacteristicToCheck;
-    BOOL m_bDiscoveringDescriptors;
-    NSInteger m_nNextCharacteristicToCheck;
+    NSUInteger m_nNextServiceCharacteristicsToCheck;
+    BOOL m_bIsScanningEnabled;
+    CBCentralManagerState m_cmsPreviousState;
 }
 
 
@@ -37,96 +35,73 @@
 @property (strong, nonatomic) CBPeripheral      *cbpConnectedDevice;
 @property (strong, nonatomic) NSMutableArray    *foundPeripherals;
 @property (strong, nonatomic) NSMutableArray	*foundServices;
-@property (strong, nonatomic) NSMutableArray	*foundIncludedServices;
 @property (strong, nonatomic) NSMutableArray	*foundCharacteristics;
-@property (strong, nonatomic) NSMutableDictionary	*dctFoundDescriptors;
+@property (strong, nonatomic) NSMutableArray	*foundDescriptors;
+@property (strong, nonatomic) NSTimer *scanTimer;
 
 #pragma mark -- PRIVATE (Utility) Methods
 
 - (void)loadSavedDevices;
 - (void)addSavedDevice:(CFUUIDRef)uuid;
 - (void)removeSavedDevice:(CFUUIDRef)uuid;
+
 - (void)clearDevices;
+
 - (NSString *)descriptionOfError:(NSError *)error;
-- (void)startScanningForIncludedServices;
+
+- (void)startScanningForIncludedServicesWithCount:(NSInteger)count;
 - (void)continueScanForIncludedServices;
 
 - (void)scanForServiceCharacteristics;
 - (void)continueScanForServiceCharacteristics;
 
-- (void)scanForCharacteristicDescriptors;
-- (void)continueScanForCharacteristicDescriptors;
-
 @end
 
-#pragma mark - CLASS ISPLowEnergyManager - Implementation
 
-@implementation ISPLowEnergyManager {
+#pragma mark - CLASS ISPLowEnergyManager - Implemention
 
-}
+@implementation ISPLowEnergyManager
+
 
 #pragma mark - CLASS METHODS
 
 + (id) sharedInstance
 {
-	static ISPLowEnergyManager	*s_lemSingleInstance = nil;
+	static ISPLowEnergyManager	*this	= nil;
 
-	if (s_lemSingleInstance == nil) {
+	if (!this) {
         DLog(@"");
-		s_lemSingleInstance = [[ISPLowEnergyManager alloc] init];
+		this = [[ISPLowEnergyManager alloc] init];
     }
 
-	return s_lemSingleInstance;
+	return this;
 }
-
-+(NSString *)keyForDescriptor:(CBDescriptor *)descriptor ofCharacteristic:(CBCharacteristic *)characteristic
-{
-    NSString *strDescriptorKey = [NSString stringWithFormat:@"%@;%@",characteristic.UUID.str, descriptor.UUID.str];
-    return strDescriptorKey;
-}
-
-+(void)UUIDsForDescriptorKey:(NSString *)descriptorKey characteristicKeyPortion:(NSString **)characteristicUUIDString descriptorKeyPortion:(NSString **)descriptorUUIDString
-{
-    NSArray *UUIDsFoundAr = [descriptorKey componentsSeparatedByString:@";"];
-    NSAssert([UUIDsFoundAr count] == 2, @"ERROR Failed to split Descriptor Key string!?");
-    *characteristicUUIDString = [NSString stringWithString:[UUIDsFoundAr objectAtIndex:0]];
-    *characteristicUUIDString = [NSString stringWithString:[UUIDsFoundAr objectAtIndex:1]];
-}
-
-+(NSString *)characteristicUUIDStringForDescriptorKey:(NSString *)descriptorKey
-{
-    NSArray *UUIDsFoundAr = [descriptorKey componentsSeparatedByString:@";"];
-    NSAssert([UUIDsFoundAr count] == 2, @"ERROR Failed to split Descriptor Key string!?");
-    return [UUIDsFoundAr objectAtIndex:0];
-}
-
-+(NSString *)descriptorUUIDStringForDescriptorKey:(NSString *)descriptorKey
-{
-    NSArray *UUIDsFoundAr = [descriptorKey componentsSeparatedByString:@";"];
-    NSAssert([UUIDsFoundAr count] == 2, @"ERROR Failed to split Descriptor Key string!?");
-    return [UUIDsFoundAr objectAtIndex:1];
-}
-
 
 #pragma mark -- Instance Methods
+
+const NSTimeInterval ktiDefaultDurationInSeconds = 1.0;
+const NSUInteger knDefaultNumberOfDevicesToLocate = 1;
 
 
 - (id) init
 {
     self = [super init];
     if (self) {
-        DLog(@"");
+        DLog(@"- self=[%@]", self);
 		m_bPendingInit = YES;
-        m_bDiscoveringIncludedServices = NO;
-        m_bDiscoveringCharacteristics = NO;
-        m_bDiscoveringDescriptors = NO;
 		self.cbcManager = [[CBCentralManager alloc] initWithDelegate:self queue:dispatch_get_main_queue()];
+
+        self.searchUUID = nil;   // locate any devices you can hear
+        self.numberOfDevicesToLocate = knDefaultNumberOfDevicesToLocate;
+        self.searchDurationInSeconds = ktiDefaultDurationInSeconds;
+
+        m_bIsScanningEnabled = NO;
+
+        m_cmsPreviousState = kcmsNeverSetState;
 
 		self.foundPeripherals = [[NSMutableArray alloc] init];
 		self.foundServices = [[NSMutableArray alloc] init];
-		self.foundIncludedServices = [[NSMutableArray alloc] init];
 		self.foundCharacteristics = [[NSMutableArray alloc] init];
-		self.dctFoundDescriptors = [NSMutableDictionary dictionary];
     }
     return self;
 }
@@ -134,7 +109,7 @@
 
 - (void) dealloc
 {
-    DLog(@"");
+    DLog(@"- self=[%@]", self);
 
     // We are a singleton and as such, dealloc shouldn't be called.
     NSAssert(false, @"dealloc should NOT be called on singleton!!!");
@@ -145,73 +120,84 @@
 - (void)loadSavedDevices
 {
     DLog(@"- ENTRY");
-	NSArray	*storedDevices	= [[NSUserDefaults standardUserDefaults] arrayForKey:@"StoredDevices"];
+	NSArray	*storedDevicesAr	= [[NSUserDefaults standardUserDefaults] arrayForKey:@"StoredDevices"];
 
-	if (![storedDevices isKindOfClass:[NSArray class]]) {
-        DLog(@"- No stored array to load");
-        return;
+	if (![storedDevicesAr isKindOfClass:[NSArray class]]) {
+        DLog(@"  -- No stored array to load");
     }
+    else
+    {
+        DLog(@"  -- Loaded [%@]", storedDevicesAr);
+        for (id deviceUUIDString in storedDevicesAr) {
 
-    for (id deviceUUIDString in storedDevices) {
+            if (![deviceUUIDString isKindOfClass:[NSString class]])
+                continue;
 
-        if (![deviceUUIDString isKindOfClass:[NSString class]])
-            continue;
+            CFUUIDRef uuid = CFUUIDCreateFromString(NULL, (CFStringRef)deviceUUIDString);
+            if (!uuid)
+                continue;
 
-        CFUUIDRef uuid = CFUUIDCreateFromString(NULL, (CFStringRef)deviceUUIDString);
-        if (!uuid)
-            continue;
-
-        [self.cbcManager retrievePeripherals:[NSArray arrayWithObject:(__bridge id)uuid]];
-        CFRelease(uuid);
+            [self.cbcManager retrievePeripherals:[NSArray arrayWithObject:(__bridge id)uuid]];
+            CFRelease(uuid);
+        }
     }
+    
     DLog(@"- EXIT");
 }
 
 
 - (void)addSavedDevice:(CFUUIDRef)uuid
 {
-	NSArray			*storedDevices	= [[NSUserDefaults standardUserDefaults] arrayForKey:@"StoredDevices"];
-	NSMutableArray	*newDevices		= nil;
+	NSArray			*storedDevicesAr	= [[NSUserDefaults standardUserDefaults] arrayForKey:@"StoredDevices"];
+	NSMutableArray	*updatedDevicesAr	= nil;
 	CFStringRef		uuidString		= NULL;
 
     DLog(@"- ENTRY");
+    
+	if (![storedDevicesAr isKindOfClass:[NSArray class]]) {
+        DLog(@"  -- Can't find/create an array to store the uuid");
+    }
+    else
+    {
+        updatedDevicesAr = [NSMutableArray arrayWithArray:storedDevicesAr];
 
-	if (![storedDevices isKindOfClass:[NSArray class]]) {
-        DLog(@"Can't find/create an array to store the uuid");
-        return;
+        uuidString = CFUUIDCreateString(NULL, uuid);
+        if (uuidString) {
+            [updatedDevicesAr addObject:(__bridge NSString*)uuidString];
+            CFRelease(uuidString);
+        }
+        /* Store */
+        DLog(@"  -- stored device list [%@]", updatedDevicesAr);
+        [[NSUserDefaults standardUserDefaults] setObject:updatedDevicesAr forKey:@"StoredDevices"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
     }
 
-    newDevices = [NSMutableArray arrayWithArray:storedDevices];
-
-    uuidString = CFUUIDCreateString(NULL, uuid);
-    if (uuidString) {
-        [newDevices addObject:(__bridge NSString*)uuidString];
-        CFRelease(uuidString);
-    }
-    /* Store */
-    [[NSUserDefaults standardUserDefaults] setObject:newDevices forKey:@"StoredDevices"];
-    [[NSUserDefaults standardUserDefaults] synchronize];
     DLog(@"- EXIT");
 }
 
 
 - (void)removeSavedDevice:(CFUUIDRef)uuid
 {
-	NSArray			*storedDevices	= [[NSUserDefaults standardUserDefaults] arrayForKey:@"StoredDevices"];
-	NSMutableArray	*newDevices		= nil;
+	NSArray			*storedDevicesAr	= [[NSUserDefaults standardUserDefaults] arrayForKey:@"StoredDevices"];
+	NSMutableArray	*updatedDevicesAr		= nil;
 	CFStringRef		uuidString		= NULL;
 
     DLog(@"- ENTRY");
-	if ([storedDevices isKindOfClass:[NSArray class]]) {
-		newDevices = [NSMutableArray arrayWithArray:storedDevices];
+	if (![storedDevicesAr isKindOfClass:[NSArray class]]) {
+        DLog(@"  -- Can't find/create an array to store the uuid");
+    }
+    else
+    {
+		updatedDevicesAr = [NSMutableArray arrayWithArray:storedDevicesAr];
 
 		uuidString = CFUUIDCreateString(NULL, uuid);
 		if (uuidString) {
-			[newDevices removeObject:(__bridge NSString*)uuidString];
+			[updatedDevicesAr removeObject:(__bridge NSString*)uuidString];
             CFRelease(uuidString);
         }
 		/* Store */
-		[[NSUserDefaults standardUserDefaults] setObject:newDevices forKey:@"StoredDevices"];
+        DLog(@"  -- rewrite updated device list [%@]", updatedDevicesAr);
+		[[NSUserDefaults standardUserDefaults] setObject:updatedDevicesAr forKey:@"StoredDevices"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 	}
     DLog(@"- EXIT");
@@ -221,54 +207,58 @@
 {
     DLog(@"");
     [self.foundPeripherals removeAllObjects];
-
+    
     [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_ALL_DEVICES_REMOVED object:nil];
 
-    //    for (LeTemperatureAlarmService	*service in connectedServices) {
-    //        [service reset];
-    //    }
-    //    [connectedServices removeAllObjects];
+//    for (LeTemperatureAlarmService	*service in connectedServices) {
+//        [service reset];
+//    }
+//    [connectedServices removeAllObjects];
 }
 
 
+- (NSArray *)peripherals
+{
+    return self.foundPeripherals;
+}
+
 #pragma mark --- PUBLIC Instance Methods
 
-- (void)startScanningForListOfUUIDs:(NSArray *)uuidList
+- (void)enableScanningWhenReady
+{
+    m_bIsScanningEnabled = YES;
+    if(m_cmsPreviousState == CBCentralManagerStatePoweredOn) {
+        // we're powered-on, start looking for devices...
+        DLog(@"*** Request SCAN")
+        [self startScanningForUUIDString:self.searchUUID];
+    }
+}
+
+
+- (void) startScanningForUUIDString:(NSString *)uuidString
 {
     [self.foundPeripherals removeAllObjects];
+    
+    self.searchUUID = uuidString;
+
+    [self.scanTimer invalidate];    // just to be safe!
+	self.scanTimer = [NSTimer scheduledTimerWithTimeInterval:self.searchDurationInSeconds target:self selector:@selector(handleExpirationOfTimer:) userInfo:nil repeats:NO];
 
     NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:CBCentralManagerScanOptionAllowDuplicatesKey];
-    if(uuidList == nil)
+    if(uuidString == nil)
     {
         DLog(@"- startScan for ALL DEVICES");
         [self.cbcManager scanForPeripheralsWithServices:[NSArray array] options:options];
     }
     else
     {
-        DLog(@"- startScan for [%@] DEVICEs", uuidList);
-        [self.cbcManager scanForPeripheralsWithServices:uuidList options:options];
+        DLog(@"- startScan for [%@] DEVICES", uuidString);
+        NSArray	*uuidArray = [NSArray arrayWithObject:[CBUUID UUIDWithString:uuidString]];
+        [self.cbcManager scanForPeripheralsWithServices:uuidArray options:options];
     }
 
     // NOW SCANNING UNTIL STOPPED!
-    DLog(@"- NOTIFY: SCAN Started...");
     [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_DEVICE_SCAN_STARTED object:nil];
-}
-
-- (void) startScanningForUUIDString:(NSString *)uuidString
-{
-    self.searchUUID = uuidString;
-
-    if(uuidString == nil)
-    {
-        DLog(@"- startScan for ALL DEVICES");
-        [self startScanningForListOfUUIDs:nil];
-    }
-    else
-    {
-        DLog(@"- startScan for [%@] DEVICE", uuidString);
-        NSArray	*uuidArray = [NSArray arrayWithObject:[CBUUID UUIDWithString:uuidString]];
-        [self startScanningForListOfUUIDs:uuidArray];
-    }
 }
 
 - (void) stopScanning
@@ -276,30 +266,30 @@
     DLog(@"");
     [self.cbcManager stopScan];
     // NOW STOPPING SCAN!
-    DLog(@"- NOTIFY: SCAN Stopped...");
-    [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_DEVICE_SCAN_STOPPED object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_DEVICE_SCAN_STOPPED object:self.foundPeripherals];
 }
 
 - (void) connectPeripheral:(CBPeripheral*)peripheral
 {
+    DLog(@"- ENTRY");
     self.cbpConnectedDevice = peripheral;
 
     if(![self.cbpConnectedDevice isConnected])
     {
+        DLog(@"  -- remove services/characteristics, then re-get");
         [self.foundServices removeAllObjects];
-        [self.foundIncludedServices removeAllObjects];
         [self.foundCharacteristics removeAllObjects];
-        [self.dctFoundDescriptors removeAllObjects];
         self.cbpConnectedDevice.delegate = self; // we want to receive callbacks from this device!!
-
-        DLog(@"- Connecting to Device: %@", self.cbpConnectedDevice);
-
+        
+        DLog(@"  -- Device: %@", self.cbpConnectedDevice);
+        
         [self.cbcManager connectPeripheral:self.cbpConnectedDevice options:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:CBConnectPeripheralOptionNotifyOnDisconnectionKey]];
     }
     else
     {
-        DLog(@"- ERROR already connected to Device: %@", self.cbpConnectedDevice);
+        DLog(@"  -- ERROR already connected to Device: %@", self.cbpConnectedDevice);
     }
+    DLog(@"- EXIT");
 }
 
 - (void) disconnectPeripheral:(CBPeripheral*)peripheral
@@ -323,6 +313,20 @@
     [self.cbpConnectedDevice discoverCharacteristics:nil forService:service];
 }
 
+- (NSNumber *)rssiForPeripheral:(CBPeripheral*)peripheral
+{
+    NSNumber *nuLatestRSSI = nil;
+    if(peripheral.RSSI == nil)
+    {
+        nuLatestRSSI = peripheral.latestRSSI;
+    }
+    else
+    {
+        nuLatestRSSI = peripheral.RSSI;
+    }
+    DLog(@"- [%@]", nuLatestRSSI);
+    return nuLatestRSSI;
+}
 
 #pragma mark --- PRIVATE (Utility) Methods
 
@@ -331,45 +335,44 @@
     NSString *strErrorInd = @"";
     if(error != nil)
     {
-        strErrorInd = [NSString stringWithFormat:@"ERROR: %@",[error localizedDescription]];
+        strErrorInd = [NSString stringWithFormat:@"ERROR(%d): %@", error.code, [error localizedDescription]];
     }
     return strErrorInd;
 }
 
-- (void)startScanningForIncludedServices
+- (void)startScanningForIncludedServicesWithCount:(NSInteger)count
 {
-    DLog(@"");
+    DLog(@"- count=%d", count);
+    m_nMaxServices = count;
     m_bDiscoveringIncludedServices = YES;
     m_nNextServiceToCheck = 0;
-    m_nMaxServices = [self.foundServices count];
 
     [self continueScanForIncludedServices];
 }
 
 - (void)continueScanForIncludedServices
 {
+    DLog(@"- ENTRY");
     if(m_bDiscoveringIncludedServices)
     {
-        DLog(@"- discover included services for svc #%d", m_nNextServiceToCheck);
-        [self.cbpConnectedDevice discoverIncludedServices:nil forService:[self.foundServices objectAtIndex:m_nNextServiceToCheck++]];
+        CBService *svcNext = [self.foundServices objectAtIndex:m_nNextServiceToCheck++];
+        DLog(@"- discover included services for svc #%lu of %d: [%@]", (unsigned long)m_nNextServiceToCheck, self.foundServices.count, svcNext);
+        [self.cbpConnectedDevice discoverIncludedServices:nil forService:svcNext];
+        DLog(@"  -- is last?");
         if(m_nNextServiceToCheck == m_nMaxServices)
         {
             DLog(@"- Preceeding is LAST Request!");
             m_bDiscoveringIncludedServices = NO;
         }
     }
-    else
-    {
-        DLog(@"-[code??] no point, we are already done! ");
-    }
+    DLog(@"- EXIT");
 }
 
 - (void)scanForServiceCharacteristics
 {
     DLog(@"");
     m_bDiscoveringCharacteristics = YES;
-    m_nNextServiceCharacteristicToCheck = 0;
-    m_nMaxServices = [self.foundIncludedServices count];
+    m_nNextServiceCharacteristicsToCheck = 0;
 
     [self continueScanForServiceCharacteristics];
 }
@@ -378,69 +381,38 @@
 {
     if(m_bDiscoveringCharacteristics)
     {
-        DLog(@"- discover characteristics for svc #%d", m_nNextServiceCharacteristicToCheck);
-        [self.cbpConnectedDevice discoverCharacteristics:nil forService:[self.foundIncludedServices objectAtIndex:m_nNextServiceCharacteristicToCheck++]];
-        if(m_nNextServiceCharacteristicToCheck == m_nMaxServices)
+        DLog(@"- discover characteristics for svc #%lu", (unsigned long)m_nNextServiceCharacteristicsToCheck);
+        [self.cbpConnectedDevice discoverCharacteristics:nil forService:[self.foundServices objectAtIndex:m_nNextServiceCharacteristicsToCheck++]];
+        if(m_nNextServiceCharacteristicsToCheck == m_nMaxServices)
         {
             DLog(@"- Preceeding is LAST Request!");
             m_bDiscoveringCharacteristics = NO;
         }
-    }
-    else
-    {
-        DLog(@"-[code??] no point, we are already done! ");
-    }
-}
-
-- (void)scanForCharacteristicDescriptors
-{
-    DLog(@"");
-    m_bDiscoveringDescriptors = YES;
-    m_nNextCharacteristicToCheck = 0;
-
-    [self continueScanForCharacteristicDescriptors];
-}
-
-- (void)continueScanForCharacteristicDescriptors
-{
-    if(m_bDiscoveringDescriptors)
-    {
-        DLog(@"- discover descriptors for characteristic #%d", m_nNextCharacteristicToCheck);
-        [self.cbpConnectedDevice discoverDescriptorsForCharacteristic:[self.foundCharacteristics objectAtIndex:m_nNextCharacteristicToCheck++]];
-        if(m_nNextCharacteristicToCheck == [self.foundCharacteristics count])
-        {
-            DLog(@"- Preceeding is LAST Request!");
-            m_bDiscoveringDescriptors = NO;
-        }
-    }
-    else
-    {
-        DLog(@"-[code??] no point, we are already done! ");
     }
 }
 
 
 #pragma mark - PROTOCOL <CBCentralManagerDelegate> Methods
 
+const CBCentralManagerState kcmsNeverSetState = (CBCentralManagerState)-1;
+
 - (void)centralManagerDidUpdateState:(CBCentralManager *)central
 {
-    const CBCentralManagerState kcmsNeverSetState = (CBCentralManagerState)-1;
-
-    static CBCentralManagerState s_cmsPreviousState = kcmsNeverSetState;
 
     // read once so we don't accidentally incorporate a state-change
     CBCentralManagerState cmsNewState = [central state];
-
+    
 	switch (cmsNewState) {
 		case CBCentralManagerStatePoweredOff:
 		{
             DLog(@">>>  CBCentralManagerStatePoweredOff  <<<");
-            [self clearDevices];
+           [self clearDevices];
 
 			/* Tell user to power ON BT for functionality, but not on first run - the Framework will alert in that instance. */
-            if (s_cmsPreviousState != kcmsNeverSetState) {
+            if (m_cmsPreviousState != kcmsNeverSetState) {
                 //[discoveryDelegate discoveryStatePoweredOff];
             }
+            [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_RADIO_POWERED_OFF object:nil];
 			break;
 		}
 
@@ -448,6 +420,7 @@
 		{
             DLog(@">>>  CBCentralManagerStateUnauthorized  <<<");
 			/* Tell user the app is not allowed. */
+            [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_BLE_NOT_AUTHORIZED object:nil];
 			break;
 		}
 
@@ -455,12 +428,14 @@
 		{
             DLog(@">>>  CBCentralManagerStateUnknown  <<<");
 			/* Bad news, let's wait for another event. */
+            [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_RADIO_STATE_UNKNOWN object:nil];
 			break;
 		}
 		case CBCentralManagerStateUnsupported:
 		{
             DLog(@">>>  CBCentralManagerStateUnsupported  <<<");
 			/* Bad news, let's wait for another event. */
+            [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_RADIO_STATE_UNSUPPORTED object:nil];
 			break;
 		}
 
@@ -471,9 +446,12 @@
 			[self loadSavedDevices];
 			[central retrieveConnectedPeripherals];
 
-            // we're powered-on, start looking for devices...
-            DLog(@"*** Request SCAN")
-            [self startScanningForUUIDString:self.searchUUID];
+            if(m_bIsScanningEnabled)
+            {
+                // we're powered-on, start looking for devices...
+                DLog(@"*** Request SCAN")
+                [self startScanningForUUIDString:self.searchUUID];
+            }
 			break;
 		}
 
@@ -487,16 +465,16 @@
 		}
         default:
         {
-            DLog(@">>>  ?? Huh ?? case not added? [%d]  <<<", cmsNewState);
+            DLog(@">>>  ?? Huh ?? case not added? [%d]  <<<", (int)cmsNewState);
         }
 	}
 
-    s_cmsPreviousState = cmsNewState;
+    m_cmsPreviousState = cmsNewState;
 }
 
 - (void)centralManager:(CBCentralManager *)central didDiscoverPeripheral:(CBPeripheral *)peripheral advertisementData:(NSDictionary *)advertisementData RSSI:(NSNumber *)RSSI
 {
-    DLog(@"- NAME=[%@], UUID=[%@], RSSI=%d, advert=[%@], periph=[%@]", peripheral.name, peripheral.UUIDstr, [RSSI integerValue], advertisementData, [peripheral description]);
+    DLog(@"- NAME=[%@], UUID=[%@], RSSI=%ld, advert=[%@], periph=[%@]", peripheral.name, peripheral.UUIDstr, (long)[RSSI integerValue], advertisementData, [peripheral description]);
     peripheral.latestRSSI = RSSI;
 
     if (![self.foundPeripherals containsObject:peripheral]) {
@@ -517,7 +495,7 @@
 
 - (void)centralManager:(CBCentralManager *)central didFailToConnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error
 {
-    DLog(@"*** UUID=[%@] - Attempted connection to peripheral %@ failed: %@", peripheral.UUIDstr, [peripheral name], [error localizedDescription]);
+    DLog(@"*** UUID=[%@] - Attempted connection to peripheral %@ failed: ERROR(%d) %@", peripheral.UUIDstr, [peripheral name], error.code, [error localizedDescription]);
     [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_CONNECT_BLE_DEVICE_FAILURE object:peripheral];
 }
 
@@ -527,14 +505,16 @@
         NSArray *disconnectFailureArray = [NSArray arrayWithObjects:error, peripheral, nil];
         [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_DISCONNECT_BLE_DEVICE_FAILURE object:disconnectFailureArray];
 
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Disconnect Error", @"") message:error.localizedDescription delegate:self cancelButtonTitle:NSLocalizedString(@"OK",@"") otherButtonTitles: nil];
+        //UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Disconnect Error", @"") message:error.localizedDescription delegate:self cancelButtonTitle:NSLocalizedString(@"OK",@"") otherButtonTitles: nil];
+        CustomAlertView *alert = [[CustomAlertView alloc] initWithTitle:NSLocalizedString(@"Disconnect Error", @"") message:error.localizedDescription delegate:self cancelButtonTitle:NSLocalizedString(@"OK",@"") otherButtonTitles: nil];
         [alert show];
     }
     else {
         DLog(@"*** UUID=[%@] SUCCESS", peripheral.UUIDstr);
         [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_DISCONNECT_BLE_DEVICE_SUCCESS object:peripheral];
 
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Disconnected", @"") message:peripheral.name delegate:self cancelButtonTitle:NSLocalizedString(@"OK",@"") otherButtonTitles: nil];
+        //UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Disconnected", @"") message:peripheral.name delegate:self cancelButtonTitle:NSLocalizedString(@"OK",@"") otherButtonTitles: nil];
+        CustomAlertView *alert = [[CustomAlertView alloc] initWithTitle:NSLocalizedString(@"Disconnected", @"") message:peripheral.name delegate:self cancelButtonTitle:NSLocalizedString(@"OK",@"") otherButtonTitles: nil];
         [alert show];
     }
     DLog(@"*** Restart SCAN")
@@ -567,6 +547,7 @@
 
     ISPPeripheralTriadParameter *infoObject = [[ISPPeripheralTriadParameter alloc] initWithPeripheral:peripheral parameter:nil error:error];
     [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_DEVICE_UPDATED_RSSI object:infoObject];
+    DLog(@"- EXIT");
 }
 
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverServices:(NSError *)error
@@ -574,7 +555,7 @@
 #ifdef DEBUG
     NSString *strErrorInd = [self descriptionOfError:error];
 #endif
-    DLog(@"- UUID=%@ %@", peripheral.UUIDstr, strErrorInd);
+    DLog(@"- ENTRY UUID=%@ %@", peripheral.UUIDstr, strErrorInd);
 
     ISPPeripheralTriadParameter *infoObject = [[ISPPeripheralTriadParameter alloc] initWithPeripheral:peripheral parameter:nil error:error];
     [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_DEVICE_DISCOVERED_SERVICES object:infoObject];
@@ -589,8 +570,8 @@
     }
 
     // now check each for included services as well!
-    self.foundIncludedServices = [NSMutableArray arrayWithArray:self.foundServices];
-    [self startScanningForIncludedServices];
+    [self startScanningForIncludedServicesWithCount:[peripheral.services count]];
+    DLog(@"- EXIT");
 }
 
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverIncludedServicesForService:(CBService *)service error:(NSError *)error
@@ -598,7 +579,7 @@
 #ifdef DEBUG
     NSString *strErrorInd = [self descriptionOfError:error];
 #endif
-    DLog(@"- UUID=%@ %@", service.UUID.str, strErrorInd);
+    DLog(@"- ENTRY UUID=%@ %@", service.UUID.str, strErrorInd);
 
     ISPPeripheralTriadParameter *infoObject = [[ISPPeripheralTriadParameter alloc] initWithPeripheral:peripheral parameter:service error:error];
     [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_DEVICE_DISCOVERED_INCLUDED_SERVICES object:infoObject];
@@ -608,17 +589,18 @@
     // build unique internal list of services found...
     for (CBService *newService in service.includedServices) {
         newService.containingService = service;
-        if (![self.foundIncludedServices containsObject:newService]) {
-            [self.foundIncludedServices addObject:newService];
+        if (![self.foundServices containsObject:newService]) {
+            [self.foundServices addObject:newService];
             bFoundNewService = YES;
             DLog(@"-(INTRNL) add included-service=%@", newService.UUID.str);
+            m_nMaxServices++;
         }
     }
 
     // now continue scan if scan in progress...
     if(m_bDiscoveringIncludedServices)
     {
-        DLog(@" -- more to discover...");
+        DLog(@"  -- do more...");
         // not finished discovering all... do another...
         [self continueScanForIncludedServices];
     }
@@ -627,16 +609,15 @@
         if(bFoundNewService)
         {
             DLog(@"  >>>  rescan due to adds!   <<<");
-            [self startScanningForIncludedServices];
+            [self startScanningForIncludedServicesWithCount:[self.foundServices count]];
         }
         else
         {
-            // build dictionary of services found...
             NSMutableDictionary *dctServices = [[NSMutableDictionary alloc] init];
-            for (CBService *currService in self.foundIncludedServices) {
+            for (CBService *currService in self.foundServices) {
                 [dctServices setObject:currService forKey:currService.UUID.str];
             }
-
+            
             // finished with all
             [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_DEVICE_SERVICES_DISCOVERED object:[NSDictionary dictionaryWithDictionary:dctServices]];
 
@@ -644,6 +625,7 @@
             [self scanForServiceCharacteristics];
         }
     }
+    DLog(@"- EXIT");
 }
 
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error
@@ -651,12 +633,12 @@
 #ifdef DEBUG
     NSString *strErrorInd = [self descriptionOfError:error];
 #endif
-    DLog(@"- UUID=%@ %@", service.UUID.str, strErrorInd);
+    DLog(@"- ENTRY UUID=%@ %@", service.UUID.str, strErrorInd);
 
     ISPPeripheralTriadParameter *infoObject = [[ISPPeripheralTriadParameter alloc] initWithPeripheral:peripheral parameter:service error:error];
     [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_DEVICE_DISCOVERED_CHARACTERISTICS object:infoObject];
 
-    // build unique internal list of characteristics found...
+    // build unique internal list of services found...
     for (CBCharacteristic *newCharacteristic in service.characteristics) {
         if (![self.foundCharacteristics containsObject:newCharacteristic]) {
             [self.foundCharacteristics addObject:newCharacteristic];
@@ -672,7 +654,6 @@
     }
     else
     {
-        // build dictionary of characteristics found...
         NSMutableDictionary *dctCharacteristics = [[NSMutableDictionary alloc] init];
         for (CBCharacteristic *currCharacteristic  in self.foundCharacteristics) {
             [dctCharacteristics setObject:currCharacteristic forKey:currCharacteristic.UUID.str];
@@ -680,161 +661,8 @@
 
         // finished with all
         [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_DEVICE_CHARACTERISTICS_DISCOVERED object:[NSDictionary dictionaryWithDictionary:dctCharacteristics]];
-
-        // now prescan for characteristic-Descriptors, too
-        [self scanForCharacteristicDescriptors];
     }
-}
-
--(void)logDescriptor:(CBDescriptor *)descriptor withKey:(NSString *)descriptorKey
-{
-    DLog(@"- %@ value=[%@] key:[%@]", descriptor, descriptor.value, descriptorKey);
-
-    // info from CBUUID.h:
-    /*!
-     *  @const CBUUIDCharacteristicExtendedPropertiesString 0x2900
-     *  @discussion The string representation of the UUID for the extended properties descriptor.
-     *				The corresponding value for this descriptor is an <code>NSNumber</code> object.
-     */
-
-
-    /*!
-     *  @const CBUUIDCharacteristicUserDescriptionString 0x2901
-     *  @discussion The string representation of the UUID for the user description descriptor.
-     *				The corresponding value for this descriptor is an <code>NSString</code> object.
-     */
-
-    /*!
-     *  @const CBUUIDClientCharacteristicConfigurationString 0x2902
-     *  @discussion The string representation of the UUID for the client configuration descriptor.
-     *				The corresponding value for this descriptor is an <code>NSNumber</code> object.
-     */
-
-    /*!
-     *  @const CBUUIDServerCharacteristicConfigurationString 0x2903
-     *  @discussion The string representation of the UUID for the server configuration descriptor.
-     *				The corresponding value for this descriptor is an <code>NSNumber</code> object.
-     */
-
-    /*!
-     *  @const CBUUIDCharacteristicFormatString 0x2904
-     *  @discussion The string representation of the UUID for the presentation format descriptor.
-     *				The corresponding value for this descriptor is an <code>NSData</code> object.
-     */
-
-
-#ifdef DEBUG
-    if([descriptor.UUID.str isEqualToString:CBUUIDCharacteristicExtendedPropertiesString]) {
-        // 0x2900: 16-bit (NSNumber) value
-        //  http://developer.bluetooth.org/gatt/descriptors/Pages/DescriptorViewer.aspx?u=org.bluetooth.descriptor.gatt.characteristic_extended_properties.xml
-        NSNumber *nmFlagBits = descriptor.value;
-        if(nmFlagBits != nil)
-        {
-            NSAssert([nmFlagBits isKindOfClass:[NSNumber class]], @"ERROR not NSNumber value object?!!");
-            uint16_t flagBits = [nmFlagBits  shortValue];
-            DLog(@"- flag 0x%4X", flagBits);
-        }
-        else
-        {
-            DLog(@"- flag [(null)?]");
-        }
-    }
-    else if([descriptor.UUID.str isEqualToString:CBUUIDCharacteristicUserDescriptionString]) {
-        // 0x2901: utf8s (NSString) value
-        //  http://developer.bluetooth.org/gatt/descriptors/Pages/DescriptorViewer.aspx?u=org.bluetooth.descriptor.gatt.characteristic_user_description.xml
-        NSString *strDescription = descriptor.value;
-        if(strDescription != nil)
-        {
-            NSAssert([strDescription isKindOfClass:[NSString class]], @"ERROR not NSString value object?!!");
-            DLog(@"- string[%@]", strDescription);
-        }
-        else
-        {
-            DLog(@"- string[(null)]");
-        }
-    }
-    else if([descriptor.UUID.str isEqualToString:CBUUIDClientCharacteristicConfigurationString]) {
-        // 0x2902: 16-bit (NSNumber) value
-        //  http://developer.bluetooth.org/gatt/descriptors/Pages/DescriptorViewer.aspx?u=org.bluetooth.descriptor.gatt.client_characteristic_configuration.xml
-        NSNumber *nmFlagBits = descriptor.value;
-        if(nmFlagBits != nil)
-        {
-            NSAssert([nmFlagBits isKindOfClass:[NSNumber class]], @"ERROR not NSNumber value object?!!");
-            uint16_t nFlagBits = [nmFlagBits  shortValue];
-            DLog(@"- flag 0x%4X", nFlagBits);
-        }
-        else
-        {
-            DLog(@"- flag [(null)?]");
-        }
-    }
-    else if([descriptor.UUID.str isEqualToString:CBUUIDServerCharacteristicConfigurationString]) {
-        // 0x2903: 16-bit (NSNumber) value [1 flag bit (lsbit): value 0,1]
-        //  http://developer.bluetooth.org/gatt/descriptors/Pages/DescriptorViewer.aspx?u=org.bluetooth.descriptor.gatt.server_characteristic_configuration.xml
-        if(descriptor.value != nil)
-        {
-            NSAssert([descriptor.value isKindOfClass:[NSNumber class]], @"ERROR not NSNumber value object?!!");
-            NSNumber *nmFlagBits = descriptor.value;
-            uint16_t nFlagBits = [nmFlagBits  shortValue];
-            DLog(@"- flag 0x%4X", nFlagBits);
-        }
-        else
-        {
-            DLog(@"- flag [(null)?]");
-        }
-    }
-    else if([descriptor.UUID.str isEqualToString:CBUUIDCharacteristicFormatString]) {
-        // 0x2904: 16-bit (NSData) value
-        //  http://developer.bluetooth.org/gatt/descriptors/Pages/DescriptorViewer.aspx?u=org.bluetooth.descriptor.gatt.characteristic_presentation_format.xml
-        if(descriptor.value != nil)
-        {
-            NSAssert([descriptor.value isKindOfClass:[NSData class]], @"ERROR not NSData value object?!!");
-            //NSData *daValues = descriptor.value;
-            // NOTE: this is a field set: uint8 [value 1-27], int8, uint16, uint8 [value 0,1] and uint16
-        }
-        else
-        {
-            DLog(@"- flag [(null)?]");
-        }
-    }
-#endif
-}
-
-
-- (void)peripheral:(CBPeripheral *)peripheral didDiscoverDescriptorsForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
-{
-#ifdef DEBUG
-    NSString *strErrorInd = [self descriptionOfError:error];
-#endif
-    DLog(@"- UUID=%@ %@", characteristic.UUID.str, strErrorInd);
-
-    ISPPeripheralTriadParameter *infoObject = [[ISPPeripheralTriadParameter alloc] initWithPeripheral:peripheral parameter:characteristic error:error];
-    [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_DEVICE_DISCOVERED_CHARACTERISTIC_DESCRIPTORS object:infoObject];
-
-    // build unique internal dictionary of characteristic-descriptors found...
-    for (CBDescriptor *newDescriptor in characteristic.descriptors) {
-        NSString *strDescriptorKey = [ISPLowEnergyManager keyForDescriptor:newDescriptor ofCharacteristic:characteristic];
-        [self logDescriptor:newDescriptor withKey:strDescriptorKey];
-        if(newDescriptor.value != NULL)
-        {
-            if ([self.dctFoundDescriptors objectForKey:strDescriptorKey] == nil) {
-                [self.dctFoundDescriptors setObject:newDescriptor forKey:strDescriptorKey];
-                DLog(@"-(INTRNL) add descriptor=%@", strDescriptorKey);
-            }
-        }
-    }
-
-    // now continue scan if scan in progress...
-    if(m_bDiscoveringDescriptors)
-    {
-        // not finished discovering all... do another...
-        [self continueScanForCharacteristicDescriptors];
-    }
-    else
-    {
-        // finished with all
-        [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_DEVICE_DESCRIPTORS_DISCOVERED object:[NSDictionary dictionaryWithDictionary:self.dctFoundDescriptors]];
-    }
+    DLog(@"- EXIT");
 }
 
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
@@ -864,10 +692,21 @@
 #ifdef DEBUG
     NSString *strErrorInd = [self descriptionOfError:error];
 #endif
-    DLog(@"- UUID=%@ %@", characteristic.UUID.str, strErrorInd);
+    DLog(@"- UUID=%@ %@", peripheral.UUIDstr, strErrorInd);
 
     ISPPeripheralTriadParameter *infoObject = [[ISPPeripheralTriadParameter alloc] initWithPeripheral:peripheral parameter:characteristic error:error];
     [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_DEVICE_UPDATED_CHARACTERISTIC_NOTIF_STATE object:infoObject];
+}
+
+- (void)peripheral:(CBPeripheral *)peripheral didDiscoverDescriptorsForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
+{
+#ifdef DEBUG
+    NSString *strErrorInd = [self descriptionOfError:error];
+#endif
+    DLog(@"- UUID=%@ %@", peripheral.UUIDstr, strErrorInd);
+
+    ISPPeripheralTriadParameter *infoObject = [[ISPPeripheralTriadParameter alloc] initWithPeripheral:peripheral parameter:characteristic error:error];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_DEVICE_DISCOVERED_CHARACTERISTIC_DESCRIPTORS object:infoObject];
 }
 
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForDescriptor:(CBDescriptor *)descriptor error:(NSError *)error
@@ -875,7 +714,7 @@
 #ifdef DEBUG
     NSString *strErrorInd = [self descriptionOfError:error];
 #endif
-    DLog(@"- UUID=%@ %@", descriptor.UUID.str, strErrorInd);
+    DLog(@"- UUID=%@ %@", peripheral.UUIDstr, strErrorInd);
 
     ISPPeripheralTriadParameter *infoObject = [[ISPPeripheralTriadParameter alloc] initWithPeripheral:peripheral parameter:descriptor error:error];
     [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_DEVICE_UPDATED_DESCRIPTOR_VALUE object:infoObject];
@@ -886,11 +725,21 @@
 #ifdef DEBUG
     NSString *strErrorInd = [self descriptionOfError:error];
 #endif
-    DLog(@"- UUID=%@ %@", descriptor.UUID.str, strErrorInd);
-    
+    DLog(@"- UUID=%@ %@", peripheral.UUIDstr, strErrorInd);
+
     ISPPeripheralTriadParameter *infoObject = [[ISPPeripheralTriadParameter alloc] initWithPeripheral:peripheral parameter:descriptor error:error];
     [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_DEVICE_WROTE_DESCRIPTOR_VALUE object:infoObject];
 }
+
+#pragma mark --> PROTOCOL <NSTimerDelegate> Methods
+
+- (void)handleExpirationOfTimer:(NSTimer *)timer
+{
+    // our timer has ended, we are to be done with listening for devices to show up!
+    DLog(@"- timer [%@]", timer);
+    [self stopScanning];
+}
+
 
 
 @end

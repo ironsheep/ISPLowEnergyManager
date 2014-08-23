@@ -26,6 +26,7 @@
 		DC42940B19A7EA5E00763CF3 /* ISPNotificationConsts.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = DC4293FF19A7EA0E00763CF3 /* ISPNotificationConsts.h */; };
 		DC42940C19A7EA5E00763CF3 /* ISPPeripheralTriadParameter.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = DC42940019A7EA0E00763CF3 /* ISPPeripheralTriadParameter.h */; };
 		DC42940E19A7EA7F00763CF3 /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC42940D19A7EA7F00763CF3 /* CoreBluetooth.framework */; };
+		DC78EB0519A828A8003417C7 /* CustomAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC78EB0419A828A8003417C7 /* CustomAlertView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -78,6 +79,8 @@
 		DC42940019A7EA0E00763CF3 /* ISPPeripheralTriadParameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISPPeripheralTriadParameter.h; sourceTree = "<group>"; };
 		DC42940119A7EA0E00763CF3 /* ISPPeripheralTriadParameter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ISPPeripheralTriadParameter.m; sourceTree = "<group>"; };
 		DC42940D19A7EA7F00763CF3 /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
+		DC78EB0319A828A8003417C7 /* CustomAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomAlertView.h; sourceTree = "<group>"; };
+		DC78EB0419A828A8003417C7 /* CustomAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomAlertView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -137,6 +140,7 @@
 		DC4293D019A7E96800763CF3 /* ISPLowEnergyManager */ = {
 			isa = PBXGroup;
 			children = (
+				DC78EB0119A828A8003417C7 /* External */,
 				DC4293F419A7EA0E00763CF3 /* Categories */,
 				DC4293FF19A7EA0E00763CF3 /* ISPNotificationConsts.h */,
 				DC42940019A7EA0E00763CF3 /* ISPPeripheralTriadParameter.h */,
@@ -185,6 +189,23 @@
 				DC4293FE19A7EA0E00763CF3 /* CBUUID+Methods.m */,
 			);
 			path = Categories;
+			sourceTree = "<group>";
+		};
+		DC78EB0119A828A8003417C7 /* External */ = {
+			isa = PBXGroup;
+			children = (
+				DC78EB0219A828A8003417C7 /* ACCustomAlertView */,
+			);
+			path = External;
+			sourceTree = "<group>";
+		};
+		DC78EB0219A828A8003417C7 /* ACCustomAlertView */ = {
+			isa = PBXGroup;
+			children = (
+				DC78EB0319A828A8003417C7 /* CustomAlertView.h */,
+				DC78EB0419A828A8003417C7 /* CustomAlertView.m */,
+			);
+			path = ACCustomAlertView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -273,6 +294,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DC78EB0519A828A8003417C7 /* CustomAlertView.m in Sources */,
 				DC42940719A7EA0E00763CF3 /* ISPPeripheralTriadParameter.m in Sources */,
 				DC42940319A7EA0E00763CF3 /* CBPeripheral+Methods.m in Sources */,
 				DC42940619A7EA0E00763CF3 /* CBUUID+Methods.m in Sources */,
