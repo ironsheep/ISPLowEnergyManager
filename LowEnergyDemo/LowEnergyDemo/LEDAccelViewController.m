@@ -19,6 +19,7 @@
 #pragma mark -- PRIVATE Properties
 
 @property (weak, nonatomic) LEDTISensorTag *sensorTag;
+@property (strong, nonatomic) NSArray *cbpPeripheralsFound;
 
 #pragma mark -- IBOutlet Properties (handles to UI objects in view)
 
@@ -87,6 +88,8 @@
     [super viewWillAppear:animated];
 
     // register notification handlers
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(discoverBLEDevicesEnded:) name:kPERIPHERAL_SCAN_ENDED_NOTIFICATION object:nil];
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(valueUpdated:) name:kCHARACTERISTIC_VALUE_UPDATED object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceReady:) name:kDEVICE_IS_READY_FOR_ACCESS object:nil];
 
@@ -98,6 +101,7 @@
 
     if(self.sensorTag.isDeviceReady)
     {
+        DLog(@"- ready!");
         // telling ourself that panel is ready for access!
         [self deviceReady:nil];
     }
@@ -139,6 +143,26 @@
 
 
 #pragma mark -- PRIVATE NSNotificationCenter Callback Methods
+
+- (void)discoverBLEDevicesEnded:(NSNotification *)notification
+{
+    DLog(@" - notification=[%@]", notification);
+
+    NSAssert([notification.object isKindOfClass:[NSArray class]], @"ERROR this is NOT a NSArray?!  What broke???");
+
+    NSArray *cbpPanelsFoundAr = notification.object;
+    self.cbpPeripheralsFound = cbpPanelsFoundAr;
+
+    // if we've more than one panel, let's prompt for which we are to use...
+    if(cbpPanelsFoundAr.count > 1)
+    {
+        [self performSegueWithIdentifier:@"selectDevice" sender:self];
+    }
+    else
+    {
+        [self deviceReady:notification];
+    }
+}
 
 - (void)deviceReady:(NSNotification *)notification
 {

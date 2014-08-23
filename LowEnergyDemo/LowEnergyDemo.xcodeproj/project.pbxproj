@@ -29,6 +29,8 @@
 		DC42946B19A7ECE900763CF3 /* LEDAccelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DC42946319A7ECE800763CF3 /* LEDAccelViewController.m */; };
 		DC42946C19A7ECE900763CF3 /* LEDTempsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DC42946519A7ECE900763CF3 /* LEDTempsViewController.m */; };
 		DC42947919A7EEEC00763CF3 /* libISPLowEnergyManager.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DC42947419A7EE9700763CF3 /* libISPLowEnergyManager.a */; };
+		DC78EB3F19A8313A003417C7 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = DC78EB3E19A8313A003417C7 /* MBProgressHUD.m */; };
+		DC78EB4219A8403A003417C7 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = DC78EB4119A8403A003417C7 /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -97,6 +99,9 @@
 		DC42946419A7ECE900763CF3 /* LEDTempsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LEDTempsViewController.h; sourceTree = "<group>"; };
 		DC42946519A7ECE900763CF3 /* LEDTempsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LEDTempsViewController.m; sourceTree = "<group>"; };
 		DC42946E19A7EE9700763CF3 /* ISPLowEnergyManager.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ISPLowEnergyManager.xcodeproj; path = ../ISPLowEnergyManager/ISPLowEnergyManager.xcodeproj; sourceTree = "<group>"; };
+		DC78EB3D19A8313A003417C7 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
+		DC78EB3E19A8313A003417C7 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
+		DC78EB4119A8403A003417C7 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -127,6 +132,7 @@
 		DC42940F19A7EC5B00763CF3 = {
 			isa = PBXGroup;
 			children = (
+				DC78EB4019A8402D003417C7 /* Docs */,
 				DC42946E19A7EE9700763CF3 /* ISPLowEnergyManager.xcodeproj */,
 				DC42942119A7EC5B00763CF3 /* LowEnergyDemo */,
 				DC42944619A7EC5B00763CF3 /* LowEnergyDemoTests */,
@@ -175,6 +181,7 @@
 		DC42942219A7EC5B00763CF3 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				DC78EB3B19A8313A003417C7 /* External */,
 				DC42942319A7EC5B00763CF3 /* LowEnergyDemo-Info.plist */,
 				DC42942419A7EC5B00763CF3 /* InfoPlist.strings */,
 				DC42942719A7EC5B00763CF3 /* main.m */,
@@ -235,6 +242,31 @@
 				DC42947619A7EE9700763CF3 /* ISPLowEnergyManagerTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		DC78EB3B19A8313A003417C7 /* External */ = {
+			isa = PBXGroup;
+			children = (
+				DC78EB3C19A8313A003417C7 /* MBProgressHUD */,
+			);
+			path = External;
+			sourceTree = "<group>";
+		};
+		DC78EB3C19A8313A003417C7 /* MBProgressHUD */ = {
+			isa = PBXGroup;
+			children = (
+				DC78EB3D19A8313A003417C7 /* MBProgressHUD.h */,
+				DC78EB3E19A8313A003417C7 /* MBProgressHUD.m */,
+			);
+			path = MBProgressHUD;
+			sourceTree = "<group>";
+		};
+		DC78EB4019A8402D003417C7 /* Docs */ = {
+			isa = PBXGroup;
+			children = (
+				DC78EB4119A8403A003417C7 /* README.md */,
+			);
+			name = Docs;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -340,6 +372,7 @@
 			files = (
 				DC42943219A7EC5B00763CF3 /* Main_iPad.storyboard in Resources */,
 				DC42943A19A7EC5B00763CF3 /* Images.xcassets in Resources */,
+				DC78EB4219A8403A003417C7 /* README.md in Resources */,
 				DC42942F19A7EC5B00763CF3 /* Main_iPhone.storyboard in Resources */,
 				DC42942619A7EC5B00763CF3 /* InfoPlist.strings in Resources */,
 			);
@@ -367,6 +400,7 @@
 				DC42946819A7ECE900763CF3 /* LEDPageViewController.m in Sources */,
 				DC42946A19A7ECE900763CF3 /* LEDTISensorTag.m in Sources */,
 				DC42946619A7ECE900763CF3 /* CBCharacteristic+MyCharacteristics.m in Sources */,
+				DC78EB3F19A8313A003417C7 /* MBProgressHUD.m in Sources */,
 				DC42946C19A7ECE900763CF3 /* LEDTempsViewController.m in Sources */,
 				DC42946B19A7ECE900763CF3 /* LEDAccelViewController.m in Sources */,
 			);

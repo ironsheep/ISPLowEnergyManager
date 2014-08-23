@@ -15,6 +15,8 @@
 #import "LEDGattConsts.h"
 #import "LEDPayloadUtils.h"
 
+#import "MBProgressHUD.h"
+
 #pragma mark CLASS LEDTISensorTag - PRIVATE Interface
 
 
@@ -36,7 +38,8 @@
 
 #pragma mark -- PRIVATE PROPERTIES
 
-@property (weak, nonatomic) ISPLowEnergyManager *btManager;
+@property (weak, nonatomic) ISPLowEnergyManager *btLEManager;
+@property (strong, nonatomic) MBProgressHUD *progressHUD;
 @property (strong, nonatomic) NSDictionary *dctServices;
 @property (strong, nonatomic) NSDictionary *dctCharacteristics;
 @property (strong, nonatomic) NSDictionary *dctCharacteristicDescriptors;
@@ -100,6 +103,7 @@
 
 NSString *kDEVICE_IS_READY_FOR_ACCESS = @"DEVICE_IS_READY_FOR_ACCESS";
 NSString *kCHARACTERISTIC_VALUE_UPDATED = @"CHARACTERISTIC_VALUE_UPDATED";
+NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_SCAN_ENDED";
 
 #pragma mark -- CLASS METHODS
 
@@ -144,7 +148,7 @@ NSString *kCHARACTERISTIC_VALUE_UPDATED = @"CHARACTERISTIC_VALUE_UPDATED";
     if (self) {
         DLog(@"");
 
-        self.btManager = [ISPLowEnergyManager sharedInstance];
+        self.btLEManager = [ISPLowEnergyManager sharedInstance];
 
         self.arWritablePropertyKeys = [NSArray arrayWithObjects:
                                        kKeypathTempEnable,
@@ -164,11 +168,17 @@ NSString *kCHARACTERISTIC_VALUE_UPDATED = @"CHARACTERISTIC_VALUE_UPDATED";
                                        kKeypathGyroscopeNotify,
                                        nil];
         
+        self.progressHUD = [[MBProgressHUD alloc] init];
+        self.progressHUD.labelText = @"SCANNING";
+        self.progressHUD.detailsLabelText = @"Looking for TI devices";
+
         // if want TI Sensor Tag object:
-        self.btManager.searchUUID = nil; //kGENERIC_ACCESS_SVC;  //kIR_TEMPERATURE_SVC;
+        self.btLEManager.searchUUID = nil; //kGENERIC_ACCESS_SVC;  //kIR_TEMPERATURE_SVC;
+        self.btLEManager.numberOfDevicesToLocate = 2;
+        self.btLEManager.searchDurationInSeconds = 3.0;
 
         self.dctCallbacks = [NSMutableDictionary dictionary];  // start with no registered callbacks
-        
+
         self.deviceReady = NO;
 
         // register observation for each of our Writeable PROPERTies
@@ -180,12 +190,19 @@ NSString *kCHARACTERISTIC_VALUE_UPDATED = @"CHARACTERISTIC_VALUE_UPDATED";
         }
         
         // register notification handlers
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(discoverBLEDeviceSuccess:) name:kNOTIFICATION_ADD_BLE_DEVICE object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(discoverBLEDevicesStarted:) name:kNOTIFICATION_DEVICE_SCAN_STARTED object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(discoverBLEDevicesEnded:) name:kNOTIFICATION_DEVICE_SCAN_STOPPED object:nil];
+
+
+        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(discoverBLEDeviceSuccess:) name:kNOTIFICATION_ADD_BLE_DEVICE object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(discoverBLEDeviceServicesSuccess:) name:kNOTIFICATION_DEVICE_SERVICES_DISCOVERED object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(discoverBLEDeviceCharacteristicsSuccess:) name:kNOTIFICATION_DEVICE_CHARACTERISTICS_DISCOVERED object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(discoverBLEDeviceCharacteristicDescriptorsSuccess:) name:kNOTIFICATION_DEVICE_DISCOVERED_CHARACTERISTIC_DESCRIPTORS object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateValueForCharacteristic:) name:kNOTIFICATION_DEVICE_UPDATED_CHARACTERISTIC_VALUE object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateNotifyStateForCharacteristic:) name:kNOTIFICATION_DEVICE_UPDATED_CHARACTERISTIC_NOTIF_STATE object:nil];
+
+        // now, proceed to find devices when ready...
+        [self.btLEManager enableScanningWhenReady];
     }
     return self;
 }
@@ -300,6 +317,14 @@ NSString *kCHARACTERISTIC_VALUE_UPDATED = @"CHARACTERISTIC_VALUE_UPDATED";
 
 #pragma mark -- NSNotificationCenter Callback Methods
 
+- (void)discoverBLEDevicesStarted:(NSNotification *)notification
+{
+    DLog(@" - notification=[%@]", notification);
+    //[self showScanIndicator];
+    [self.progressHUD show:YES];
+
+}
+
 - (void)discoverBLEDeviceSuccess:(NSNotification *)notification
 {
     // validate that we only get this type of object from our callback!
@@ -312,10 +337,49 @@ NSString *kCHARACTERISTIC_VALUE_UPDATED = @"CHARACTERISTIC_VALUE_UPDATED";
     //[self hideScanIndicator];
 
     DLog(@"*** Request STOP SCAN")
-    [self.btManager stopScanning];
+    [self.btLEManager stopScanning];
 
     DLog(@"*** Now connect to device")
-    [self.btManager connectPeripheral:self.cbpTISensorTag];
+    [self.btLEManager connectPeripheral:self.cbpTISensorTag];
+}
+
+- (void)selectDevice:(CBPeripheral *)device
+{
+    self.cbpTISensorTag = device;
+    DLog(@"- selected our TI Device: [%@]", self.cbpTISensorTag);
+    self.deviceName = self.cbpTISensorTag.name;
+    [self.btLEManager connectPeripheral:self.cbpTISensorTag];
+}
+
+- (void)discoverBLEDevicesEnded:(NSNotification *)notification
+{
+    DLog(@" - notification=[%@]", notification);
+    //[self hideScanIndicator];
+    [self.progressHUD hide:YES];
+
+    NSAssert([notification.object isKindOfClass:[NSArray class]], @"ERROR this is NOT a NSArray?!  What broke???");
+
+    NSArray *cbpPanelsFoundAr = notification.object;
+    if(cbpPanelsFoundAr.count == 0)
+    {
+        DLog(@"*** No TI devices found!")
+    }
+    else if(cbpPanelsFoundAr.count == 1)
+    {
+        //DLog(@"*** Request STOP SCAN")
+        //[self.btLEManager stopScanning];   // this is already done!
+
+        DLog(@"*** Now connect to only TI device")
+        [self selectDevice:[cbpPanelsFoundAr objectAtIndex:0]];
+
+        //[[NSNotificationCenter defaultCenter] postNotificationName:kPERIPHERAL_SCAN_ENDED_NOTIFICATION object:notification.object];
+    }
+    else
+    {
+        DLog(@"*** Found more than one TI device =[%@]!", cbpPanelsFoundAr)
+        // have many radios but up dialog so can select one!
+        [[NSNotificationCenter defaultCenter] postNotificationName:kPERIPHERAL_SCAN_ENDED_NOTIFICATION object:notification.object];
+    }
 }
 
 - (void)discoverBLEDeviceServicesSuccess:(NSNotification *)notification
@@ -332,6 +396,8 @@ NSString *kCHARACTERISTIC_VALUE_UPDATED = @"CHARACTERISTIC_VALUE_UPDATED";
     NSAssert([notification.object isKindOfClass:[NSDictionary class]], @"ERROR this is NOT a NSDictionary?!  What broke???");
     self.dctCharacteristics = notification.object;
     DLog(@"- located our Panel-Characteristics: [%@]", self.dctCharacteristics);
+    self.deviceReady = YES; // let others see if we have come ready as well!
+    [[NSNotificationCenter defaultCenter] postNotificationName:kDEVICE_IS_READY_FOR_ACCESS object:nil];
 }
 
 - (void)discoverBLEDeviceCharacteristicDescriptorsSuccess:(NSNotification *)notification
@@ -745,7 +811,7 @@ NSString *kCHARACTERISTIC_VALUE_UPDATED = @"CHARACTERISTIC_VALUE_UPDATED";
 - (void)applicationWillTerminate:(NSNotification *)notification
 {
     DLog(@"*** Now disconnect from panel")
-    [self.btManager disconnectPeripheral:self.cbpTISensorTag];
+    [self.btLEManager disconnectPeripheral:self.cbpTISensorTag];
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 
     // Unregister Observations

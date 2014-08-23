@@ -355,14 +355,21 @@ const NSUInteger knDefaultNumberOfDevicesToLocate = 1;
     DLog(@"- ENTRY");
     if(m_bDiscoveringIncludedServices)
     {
-        CBService *svcNext = [self.foundServices objectAtIndex:m_nNextServiceToCheck++];
-        DLog(@"- discover included services for svc #%lu of %d: [%@]", (unsigned long)m_nNextServiceToCheck, self.foundServices.count, svcNext);
-        [self.cbpConnectedDevice discoverIncludedServices:nil forService:svcNext];
-        DLog(@"  -- is last?");
-        if(m_nNextServiceToCheck == m_nMaxServices)
+        if(self.foundServices != nil && self.foundServices.count > 0)
         {
-            DLog(@"- Preceeding is LAST Request!");
-            m_bDiscoveringIncludedServices = NO;
+            CBService *svcNext = [self.foundServices objectAtIndex:m_nNextServiceToCheck++];
+            DLog(@"- discover included services for svc #%lu of %d: [%@]", (unsigned long)m_nNextServiceToCheck, self.foundServices.count, svcNext);
+            [self.cbpConnectedDevice discoverIncludedServices:nil forService:svcNext];
+            DLog(@"  -- is last?");
+            if(m_nNextServiceToCheck == m_nMaxServices)
+            {
+                DLog(@"- Preceeding is LAST Request!");
+                m_bDiscoveringIncludedServices = NO;
+            }
+        }
+        else
+        {
+            DLog(@"- ?? No Services ??");
         }
     }
     DLog(@"- EXIT");
@@ -477,10 +484,13 @@ const CBCentralManagerState kcmsNeverSetState = (CBCentralManagerState)-1;
     DLog(@"- NAME=[%@], UUID=[%@], RSSI=%ld, advert=[%@], periph=[%@]", peripheral.name, peripheral.UUIDstr, (long)[RSSI integerValue], advertisementData, [peripheral description]);
     peripheral.latestRSSI = RSSI;
 
-    if (![self.foundPeripherals containsObject:peripheral]) {
-		[self.foundPeripherals addObject:peripheral];
-        DLog(@"-(INTRNL) add peripheral=%@", peripheral.UUIDstr);
-        [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_ADD_BLE_DEVICE object:peripheral];
+    if([peripheral.name hasPrefix:@"TI BLE"])
+    {
+        if (![self.foundPeripherals containsObject:peripheral]) {
+            [self.foundPeripherals addObject:peripheral];
+            DLog(@"-(INTRNL) add peripheral=%@", peripheral.UUIDstr);
+            [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_ADD_BLE_DEVICE object:peripheral];
+        }
     }
 }
 

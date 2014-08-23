@@ -140,13 +140,13 @@
 		DC4293D019A7E96800763CF3 /* ISPLowEnergyManager */ = {
 			isa = PBXGroup;
 			children = (
-				DC78EB0119A828A8003417C7 /* External */,
 				DC4293F419A7EA0E00763CF3 /* Categories */,
+				DC78EB0119A828A8003417C7 /* External */,
+				DC4293D319A7E96800763CF3 /* ISPLowEnergyManager.h */,
+				DC4293D519A7E96800763CF3 /* ISPLowEnergyManager.m */,
 				DC4293FF19A7EA0E00763CF3 /* ISPNotificationConsts.h */,
 				DC42940019A7EA0E00763CF3 /* ISPPeripheralTriadParameter.h */,
 				DC42940119A7EA0E00763CF3 /* ISPPeripheralTriadParameter.m */,
-				DC4293D319A7E96800763CF3 /* ISPLowEnergyManager.h */,
-				DC4293D519A7E96800763CF3 /* ISPLowEnergyManager.m */,
 				DC4293D119A7E96800763CF3 /* Supporting Files */,
 			);
 			path = ISPLowEnergyManager;
