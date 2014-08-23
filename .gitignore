@@ -16,4 +16,4 @@ profile
 *.moved-aside
 DerivedData
 .idea/
-LowEnergyDemoSupport/Images/App Icon [Rounded]/
+LowEnergyDemoSupport/Images/App Icon [Rounded]/*.png
