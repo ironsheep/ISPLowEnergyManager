@@ -5,14 +5,23 @@
 > REF blog-post about this object at
 > http://ironsheep-ios-fun.blogspot.com/2013/04/simplifying-pattern-for-application.html
 
+## Demo is built to communicate with "TI Sensor Tag"
+
+> REF wiki: SensorTag User Guide about this device at
+> http://processors.wiki.ti.com/index.php/SensorTag_User_Guide
+
 ### Changelog
 
 **— Update: 2014 Aug 23: 04:22L**
 
 -   Added About Tab
+
 -   iPad is now working
+
 -   New App Icon
+
 -   New tab icons
+
 -   Spotted: interesting BUG in object temperature math (Oops!)
 
 **— Update: 2014 Aug 22: 23:05L**
