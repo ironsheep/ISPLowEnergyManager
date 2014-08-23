@@ -9,13 +9,15 @@
 #import <Foundation/Foundation.h>
 #import <CoreBluetooth/CoreBluetooth.h>
 
-#pragma mark CLASS ISPLowEnergyManager - PUBLIC Interface 
+//#pragma mark PROTOCOL Forward Declarations
+
+#pragma mark CLASS ISPLowEnergyManager - PUBLIC Interface
 
 @interface ISPLowEnergyManager : NSObject <CBCentralManagerDelegate, CBPeripheralDelegate> {
     
 }
 
-#pragma mark -- PUBLIC PROPERTIES
+#pragma mark --> PUBLIC PROPERTIES
 
 @property (strong, nonatomic) NSString *searchUUID;
 @property (assign, nonatomic) NSTimeInterval searchDurationInSeconds;
@@ -23,12 +25,12 @@
 @property (strong, nonatomic, readonly) NSArray *peripherals;
 
 
-#pragma mark -- CLASS METHODS
+#pragma mark --> CLASS (Static) Methods
 
 + (id)sharedInstance;
 
 
-#pragma mark -- INSTANCE METHODS
+#pragma mark --> INSTANCE METHODS
 
 - (void)enableScanningWhenReady;
 - (void)startScanningForUUIDString:(NSString *)uuidString;
@@ -40,5 +42,6 @@
 - (void)exploreConnectedPeripheralService:(CBService *)service;
 
 - (NSNumber *)rssiForPeripheral:(CBPeripheral*)peripheral;
+
 @end
 

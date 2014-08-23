@@ -2,6 +2,9 @@
 //  LEDTISensorTag.m
 //  LowEnergyDemo
 //
+//    This is the implementation of the singleton that represents the state of the Physical TI
+//    Sensor tag as well as marshals all communication to/from
+//
 //  Created by Stephen M Moraco on 04/04/13.
 //  Copyright (c) 2013 Iron Sheep Productions, LLC. All rights reserved.
 //
@@ -19,24 +22,11 @@
 
 #pragma mark CLASS LEDTISensorTag - PRIVATE Interface
 
-
 @interface LEDTISensorTag () {
-  @private
-    BOOL m_bIgnoreNextValueChange;
-    // calibration coefficients read from sensor (used in baro calcs)
-    BOOL m_bHaveCalibrationData;
-    uint16_t m_nC1;
-    uint16_t m_nC2;
-    uint16_t m_nC3;
-    uint16_t m_nC4;
-    int16_t m_nC5;
-    int16_t m_nC6;
-    int16_t m_nC7;
-    int16_t m_nC8;
+
 }
 
-
-#pragma mark -- PRIVATE PROPERTIES
+#pragma mark --> PRIVATE PROPERTIES
 
 @property (weak, nonatomic) ISPLowEnergyManager *btLEManager;
 @property (strong, nonatomic) MBProgressHUD *progressHUD;
@@ -79,7 +69,7 @@
 @property (assign, nonatomic) float magnetometerY;  
 @property (assign, nonatomic) float magnetometerZ;  
 
-#pragma mark -- PRIVATE (Utility) Methods
+#pragma mark --> PRIVATE (Utility) Methods
 
 - (void)discoverBLEDeviceSuccess:(NSNotification *)notification;
 - (void)discoverBLEDeviceServicesSuccess:(NSNotification *)notification;
@@ -95,34 +85,7 @@
 
 @end
 
-
-#pragma mark - CLASS LEDTISensorTag - Implementation
-@implementation LEDTISensorTag {
-    
-}
-
-NSString *kDEVICE_IS_READY_FOR_ACCESS = @"DEVICE_IS_READY_FOR_ACCESS";
-NSString *kCHARACTERISTIC_VALUE_UPDATED = @"CHARACTERISTIC_VALUE_UPDATED";
-NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_SCAN_ENDED";
-
-#pragma mark -- CLASS METHODS
-
-+ (id) sharedInstance
-{
-	static LEDTISensorTag	*s_pSharedSingleInstance= nil;
-
-	if (!s_pSharedSingleInstance) {
-        DLog(@"");
-		s_pSharedSingleInstance = [[LEDTISensorTag alloc] init];
-    }
-
-	return s_pSharedSingleInstance;
-}
-
-
-//#pragma mark -- PUBLIC Property Setters (writeable properties, only)
-
-#pragma mark -- Instance Methods
+#pragma mark - INTERNAL USE KeyPath Constants
 
 // NOTE: one of these def's for each Writeable PROPERTY
 #define kKeypathTempEnable @"tempEnable"
@@ -140,6 +103,53 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
 #define kKeypathMagnetometerPeriod @"magnetometerPeriod"
 #define kKeypathGyroscopeEnable @"gyroscopeEnable"
 #define kKeypathGyroscopeNotify @"gyroscopeNotify"
+
+
+#pragma mark - CLASS LEDTISensorTag - Implementation
+
+@implementation LEDTISensorTag {
+@private  // not needed, just a reminder ;-)
+    BOOL m_bIgnoreNextValueChange;
+    // calibration coefficients read from sensor (used in baro calcs)
+    BOOL m_bHaveCalibrationData;
+    uint16_t m_nC1;
+    uint16_t m_nC2;
+    uint16_t m_nC3;
+    uint16_t m_nC4;
+    int16_t m_nC5;
+    int16_t m_nC6;
+    int16_t m_nC7;
+    int16_t m_nC8;
+}
+
+NSString *kDEVICE_IS_READY_FOR_ACCESS = @"DEVICE_IS_READY_FOR_ACCESS";
+NSString *kCHARACTERISTIC_VALUE_UPDATED = @"CHARACTERISTIC_VALUE_UPDATED";
+NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_SCAN_ENDED";
+
+#pragma mark --> CLASS (Static) METHODS
+
++ (id) sharedInstance
+{
+	static LEDTISensorTag	*s_pSharedSingleInstance= nil;
+
+	if (!s_pSharedSingleInstance) {
+        DLog(@"");
+		s_pSharedSingleInstance = [[LEDTISensorTag alloc] init];
+    }
+
+	return s_pSharedSingleInstance;
+}
+
++(double)fahrenheitForTempInCentigrade:(double)tempInC
+{
+    double fTempInF = ((tempInC * 9) / 5) + 32;
+    return fTempInF;
+}
+
+
+//#pragma mark --> PUBLIC Property Setters (writeable properties, only)
+
+#pragma mark --> Instance Methods
 
 
 - (id) init
@@ -275,7 +285,7 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
     }
 }
 
-#pragma mark -- PRIVATE (Utility) Methods
+#pragma mark --> PRIVATE (Utility) Methods
 
 -(void)writeValue:(NSData *)data forCharacteristicUUIDString:(NSString *)UUIDString
 {
@@ -315,7 +325,15 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
     return foundService;
 }
 
-#pragma mark -- NSNotificationCenter Callback Methods
+- (void)selectDevice:(CBPeripheral *)device
+{
+    self.cbpTISensorTag = device;
+    DLog(@"- selected our TI Device: [%@]", self.cbpTISensorTag);
+    self.deviceName = self.cbpTISensorTag.name;
+    [self.btLEManager connectPeripheral:self.cbpTISensorTag];
+}
+
+#pragma mark - NSNotificationCenter Callback Methods
 
 - (void)discoverBLEDevicesStarted:(NSNotification *)notification
 {
@@ -340,14 +358,6 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
     [self.btLEManager stopScanning];
 
     DLog(@"*** Now connect to device")
-    [self.btLEManager connectPeripheral:self.cbpTISensorTag];
-}
-
-- (void)selectDevice:(CBPeripheral *)device
-{
-    self.cbpTISensorTag = device;
-    DLog(@"- selected our TI Device: [%@]", self.cbpTISensorTag);
-    self.deviceName = self.cbpTISensorTag.name;
     [self.btLEManager connectPeripheral:self.cbpTISensorTag];
 }
 
@@ -396,6 +406,8 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
     NSAssert([notification.object isKindOfClass:[NSDictionary class]], @"ERROR this is NOT a NSDictionary?!  What broke???");
     self.dctCharacteristics = notification.object;
     DLog(@"- located our Panel-Characteristics: [%@]", self.dctCharacteristics);
+
+    // NOTE: following two lines are fix for No "Characteristic Descriptors" found on TI Devices ??
     self.deviceReady = YES; // let others see if we have come ready as well!
     [[NSNotificationCenter defaultCenter] postNotificationName:kDEVICE_IS_READY_FOR_ACCESS object:nil];
 }
@@ -800,12 +812,6 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
     NSAssert([notification.object isKindOfClass:[ISPPeripheralTriadParameter class]], @"ERROR this is NOT a ISPPeripheralTriadParameter?!  What broke???");
     ISPPeripheralTriadParameter *infoObject = notification.object;
     DLog(@"- triad=[%@]", infoObject);
-}
-
-+(double)fahrenheitForTempInCentigrade:(double)tempInC
-{
-    double fTempInF = ((tempInC * 9) / 5) + 32;
-    return fTempInF;
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification

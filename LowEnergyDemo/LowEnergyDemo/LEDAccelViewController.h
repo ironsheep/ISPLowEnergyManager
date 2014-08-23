@@ -14,8 +14,8 @@
     
 }
 
-//#pragma mark -- PUBLIC Properties
-//#pragma mark -- PUBLIC CLASS Methods
-//#pragma mark -- PUBLIC Instance Methods
+//#pragma mark --> PUBLIC Properties
+//#pragma mark --> CLASS (Static) Methods
+//#pragma mark --> PUBLIC Instance Methods
 
 @end

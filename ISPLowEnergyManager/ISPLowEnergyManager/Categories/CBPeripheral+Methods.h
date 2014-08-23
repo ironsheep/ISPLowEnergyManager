@@ -8,9 +8,12 @@
 
 #import <CoreBluetooth/CoreBluetooth.h>
 
-#pragma mark CATEGORY CBPeripheral PRIVATE Interface
+#pragma mark CATEGORY CBPeripheral(Methods) Interface
 
 @interface CBPeripheral (Methods)
+
+
+#pragma mark --> PUBLIC PROPERTIES
 
 @property (strong, nonatomic) NSNumber *latestRSSI;
 

@@ -14,15 +14,9 @@
     
 }
 
-//#pragma mark -- PUBLIC Properties
-//#pragma mark -- PUBLIC CLASS Methods
-//#pragma mark -- PUBLIC Instance Methods
-
-//#pragma mark -- IBOutlet Properties (handles to UI objects in view)
-
-
-//#pragma mark -- IBAction Methods (Methods responding to user interaction)
-
+//#pragma mark --> PUBLIC Properties
+//#pragma mark --> CLASS (Static) Methods
+//#pragma mark --> PUBLIC Instance Methods
 
 
 @end

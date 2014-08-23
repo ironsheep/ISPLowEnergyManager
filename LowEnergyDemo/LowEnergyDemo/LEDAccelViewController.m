@@ -16,12 +16,12 @@
     
 }
 
-#pragma mark -- PRIVATE Properties
+#pragma mark --> PRIVATE Properties
 
 @property (weak, nonatomic) LEDTISensorTag *sensorTag;
 @property (strong, nonatomic) NSArray *cbpPeripheralsFound;
 
-#pragma mark -- IBOutlet Properties (handles to UI objects in view)
+#pragma mark --> IBOutlet Properties (handles to UI objects in view)
 
 @property (weak, nonatomic) IBOutlet UILabel *lblDeviceName;
 
@@ -44,7 +44,7 @@
 @property (weak, nonatomic) IBOutlet UITextField *tfMagPeriod;
 @property (weak, nonatomic) IBOutlet UIStepper *stpMagPeriod;
 
-#pragma mark -- IBAction Methods (Methods responding to user interaction)
+#pragma mark --> IBAction Methods (Methods responding to user interaction)
 
 - (IBAction)OnAccelSwValueChanged:(UISwitch *)sender;
 - (IBAction)OnPeriodTouchUp:(UIStepper *)sender;
@@ -54,11 +54,11 @@
 - (IBAction)OnMagPeriodTouchUp:(UIStepper *)sender;
 - (IBAction)OnMagPeriodValueChanged:(UIStepper *)sender;
 
-#pragma mark -- PRIVATE (Utility) Methods
+#pragma mark --> PRIVATE (Utility) Methods
 
 -(void)enableUI:(BOOL)enable;
 
-#pragma mark -- PRIVATE NSNotificationCenter Callback Methods
+#pragma mark ---> PRIVATE NSNotificationCenter Callback Methods
 
 - (void)deviceReady:(NSNotification *)notification;
 - (void)valueUpdated:(NSNotification *)notification;
@@ -72,7 +72,7 @@
     
 }
 
-#pragma mark -- View Override Methods
+#pragma mark --> View Override Methods
 
 - (void)viewDidLoad
 {
@@ -128,7 +128,7 @@
 }
 
 
-#pragma mark -- PRIVATE (Utility) Methods
+#pragma mark --> PRIVATE (Utility) Methods
 
 -(void)enableUI:(BOOL)enable
 {
@@ -142,7 +142,84 @@
 }
 
 
-#pragma mark -- PRIVATE NSNotificationCenter Callback Methods
+#pragma mark --> IBAction Methods (Methods responding to user interaction)
+
+- (IBAction)OnAccelSwValueChanged:(UISwitch *)sender
+{
+    NSString *strOnInterp = (sender.on) ? @"ON" : @"Off";
+    DLog(@"- Accelerometer Updating is now: %@", strOnInterp);
+    self.sensorTag.accelerometerEnable = sender.on;
+}
+
+- (IBAction)OnPeriodTouchUp:(UIStepper *)sender
+{
+    self.sensorTag.accelerometerPeriod = (int)sender.value;
+}
+
+- (IBAction)OnPeriodValueChanged:(UIStepper *)sender
+{
+    // interpret the current stepper value to our read-only display
+    //   (scale the units so is easier to read!)
+    double fActualPeriod = (sender.value * 10.0) / 1000.0;  // convert to mSec
+    BOOL bDisplayInmSec = (fActualPeriod < 1.0) ? YES : NO; // determine which form to display
+
+    NSString *strUnits = (bDisplayInmSec) ? @"mSec" : @"Sec";   // setup units
+    double fScaledPeriod = (bDisplayInmSec) ? fActualPeriod * 1000.0 : fActualPeriod;   // re-scale the value
+    DLog(@"Stepper(%d), Actual(%f) Scaled(%f)", (int)sender.value, fActualPeriod, fScaledPeriod);
+
+    // now show in desired format
+    if(bDisplayInmSec)
+    {
+        self.tfPeriod.text = [NSString stringWithFormat:@"%d %@", (int)fScaledPeriod, strUnits];
+    }
+    else
+    {
+        self.tfPeriod.text = [NSString stringWithFormat:@"%.2f %@", fScaledPeriod, strUnits];
+    }
+}
+
+- (IBAction)OnGyroSwValueChanged:(UISwitch *)sender
+{
+    NSString *strOnInterp = (sender.on) ? @"ON" : @"Off";
+    DLog(@"- Gyroscope Updating is now: %@", strOnInterp);
+    self.sensorTag.gyroscopeEnable = sender.on;
+}
+
+- (IBAction)OnMagnetoSwValueChanged:(UISwitch *)sender
+{
+    NSString *strOnInterp = (sender.on) ? @"ON" : @"Off";
+    DLog(@"- Magnetometer Updating is now: %@", strOnInterp);
+    self.sensorTag.magnetometerEnable = sender.on;
+}
+
+- (IBAction)OnMagPeriodTouchUp:(UIStepper *)sender
+{
+    self.sensorTag.magnetometerPeriod = (int)sender.value;
+}
+
+- (IBAction)OnMagPeriodValueChanged:(UIStepper *)sender
+{
+    // interpret the current stepper value to our read-only display
+    //   (scale the units so is easier to read!)
+    double fActualPeriod = (sender.value * 10.0) / 1000.0;  // convert to mSec
+    BOOL bDisplayInmSec = (fActualPeriod < 1.0) ? YES : NO; // determine which form to display
+
+    NSString *strUnits = (bDisplayInmSec) ? @"mSec" : @"Sec";   // setup units
+    double fScaledPeriod = (bDisplayInmSec) ? fActualPeriod * 1000.0 : fActualPeriod;   // re-scale the value
+    DLog(@"Stepper(%d), Actual(%f) Scaled(%f)", (int)sender.value, fActualPeriod, fScaledPeriod);
+
+    // now show in desired format
+    if(bDisplayInmSec)
+    {
+        self.tfMagPeriod.text = [NSString stringWithFormat:@"%d %@", (int)fScaledPeriod, strUnits];
+    }
+    else
+    {
+        self.tfMagPeriod.text = [NSString stringWithFormat:@"%.2f %@", fScaledPeriod, strUnits];
+    }
+}
+
+#pragma mark --> NSNotificationCenter Callback Methods
 
 - (void)discoverBLEDevicesEnded:(NSNotification *)notification
 {
@@ -231,82 +308,5 @@
     }
 }
 
-
-#pragma mark -- IBAction Methods (Methods responding to user interaction)
-
-- (IBAction)OnAccelSwValueChanged:(UISwitch *)sender
-{
-    NSString *strOnInterp = (sender.on) ? @"ON" : @"Off";
-    DLog(@"- Accelerometer Updating is now: %@", strOnInterp);
-    self.sensorTag.accelerometerEnable = sender.on;
-}
-
-- (IBAction)OnPeriodTouchUp:(UIStepper *)sender
-{
-    self.sensorTag.accelerometerPeriod = (int)sender.value;
-}
-
-- (IBAction)OnPeriodValueChanged:(UIStepper *)sender
-{
-    // interpret the current stepper value to our read-only display
-    //   (scale the units so is easier to read!)
-    double fActualPeriod = (sender.value * 10.0) / 1000.0;  // convert to mSec
-    BOOL bDisplayInmSec = (fActualPeriod < 1.0) ? YES : NO; // determine which form to display
-    
-    NSString *strUnits = (bDisplayInmSec) ? @"mSec" : @"Sec";   // setup units
-    double fScaledPeriod = (bDisplayInmSec) ? fActualPeriod * 1000.0 : fActualPeriod;   // re-scale the value
-    DLog(@"Stepper(%d), Actual(%f) Scaled(%f)", (int)sender.value, fActualPeriod, fScaledPeriod);
-
-    // now show in desired format
-    if(bDisplayInmSec)
-    {
-        self.tfPeriod.text = [NSString stringWithFormat:@"%d %@", (int)fScaledPeriod, strUnits];
-    }
-    else
-    {
-        self.tfPeriod.text = [NSString stringWithFormat:@"%.2f %@", fScaledPeriod, strUnits];
-    }
-}
-
-- (IBAction)OnGyroSwValueChanged:(UISwitch *)sender
-{
-    NSString *strOnInterp = (sender.on) ? @"ON" : @"Off";
-    DLog(@"- Gyroscope Updating is now: %@", strOnInterp);
-    self.sensorTag.gyroscopeEnable = sender.on;
-}
-
-- (IBAction)OnMagnetoSwValueChanged:(UISwitch *)sender
-{
-    NSString *strOnInterp = (sender.on) ? @"ON" : @"Off";
-    DLog(@"- Magnetometer Updating is now: %@", strOnInterp);
-    self.sensorTag.magnetometerEnable = sender.on;
-}
-
-- (IBAction)OnMagPeriodTouchUp:(UIStepper *)sender
-{
-    self.sensorTag.magnetometerPeriod = (int)sender.value;
-}
-
-- (IBAction)OnMagPeriodValueChanged:(UIStepper *)sender
-{
-    // interpret the current stepper value to our read-only display
-    //   (scale the units so is easier to read!)
-    double fActualPeriod = (sender.value * 10.0) / 1000.0;  // convert to mSec
-    BOOL bDisplayInmSec = (fActualPeriod < 1.0) ? YES : NO; // determine which form to display
-
-    NSString *strUnits = (bDisplayInmSec) ? @"mSec" : @"Sec";   // setup units
-    double fScaledPeriod = (bDisplayInmSec) ? fActualPeriod * 1000.0 : fActualPeriod;   // re-scale the value
-    DLog(@"Stepper(%d), Actual(%f) Scaled(%f)", (int)sender.value, fActualPeriod, fScaledPeriod);
-
-    // now show in desired format
-    if(bDisplayInmSec)
-    {
-        self.tfMagPeriod.text = [NSString stringWithFormat:@"%d %@", (int)fScaledPeriod, strUnits];
-    }
-    else
-    {
-        self.tfMagPeriod.text = [NSString stringWithFormat:@"%.2f %@", fScaledPeriod, strUnits];
-    }
-}
 
 @end

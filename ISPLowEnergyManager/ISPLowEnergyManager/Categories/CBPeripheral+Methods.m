@@ -12,11 +12,11 @@
 #import "CBPeripheral+Methods.h"
 #import "objc/runtime.h"
 
-#pragma mark - CATEGORY CBPeripheral(Methods) Implementation
+#pragma mark CATEGORY CBPeripheral(Methods) Implementation
 
 @implementation CBPeripheral (Methods)
 
-#pragma mark -- Property Setters/Getters
+#pragma mark --> PUBLIC Property Setters/Getters
 
 // See: http://ddeville.me/2011/03/add-variables-to-an-existing-class-in-objective-c/
 static char latestRSSIKey;
@@ -99,6 +99,8 @@ static char latestRSSIKey;
     NSString *strTitle = [NSString stringWithFormat:@"%@:\n %@\n IsConnected=%@", self.name, self.UUIDstr, strYN];
     return strTitle;
 }
+
+#pragma mark --> PRIVATE (Utility) Methods
 
 - (BOOL)isIos7
 {

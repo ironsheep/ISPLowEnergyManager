@@ -5,6 +5,14 @@
 > REF blog-post about this object at
 > http://ironsheep-ios-fun.blogspot.com/2013/04/simplifying-pattern-for-application.html
 
+**— Update: 2014 Aug 22: 22:23L**
+
+-   -   cleanup code organization (& internal markings)
+
+    -   PENDING: move demo to use of blocks for characteristics updates
+
+    -   PENDING: setup iPad U/I
+
 **— Update: 2014 Aug 22: 21:22L**
 
 -   -   Updated to Latest Library Code

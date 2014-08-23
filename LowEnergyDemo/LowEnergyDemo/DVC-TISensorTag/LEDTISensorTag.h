@@ -2,6 +2,9 @@
 //  LEDTISensorTag.h
 //  LowEnergyDemo
 //
+//    This is the interface to the singleton that represents the state of the Physical
+//    TI Sensor tag as well as marshals all communication to/from
+//
 //  Created by Stephen M Moraco on 04/04/13.
 //  Copyright (c) 2013 Iron Sheep Productions, LLC. All rights reserved.
 //
@@ -21,12 +24,15 @@ extern NSString *kDEVICE_IS_READY_FOR_ACCESS;
 extern NSString *kCHARACTERISTIC_VALUE_UPDATED;
 extern NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION;
 
+#pragma mark --> PUBLIC PROPERTIES
 @property (assign, nonatomic, readonly, getter=isDeviceReady) BOOL deviceReady;
 
-#pragma mark -- Generic Access Service PROPERTIES
+#pragma mark ---> (Generic Access Service PROPERTIES)
+
 @property (strong, nonatomic, readonly) NSString *deviceName;
 @property (strong, nonatomic, readonly) NSString *modelNumber;
 
+#pragma mark ---> (TISensorTag Properties PROPERTIES)
 //   -------------------------------------
 //   ----   TISensorTag Properties    ----
 //   -------------------------------------
@@ -72,14 +78,14 @@ extern NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION;
 @property (assign, nonatomic, getter = isMagnetometerEnabled) BOOL magnetometerEnable;
 @property (assign, nonatomic, getter = isMagnetometerNotifying) BOOL magnetometerNotify;
 
-#pragma mark -- CLASS METHODS
+#pragma mark --> CLASS (Static) METHODS
 
 + (id)sharedInstance;
 
 // common conversions
 +(double)fahrenheitForTempInCentigrade:(double)tempInC;
 
-#pragma mark -- INSTANCE METHODS
+#pragma mark --> PUBLIC Instance METHODS
 
 // form expecting Notification Center notify of operation complete
 -(void)readCharacteristicUUIDString:(NSString *)UUIDString;

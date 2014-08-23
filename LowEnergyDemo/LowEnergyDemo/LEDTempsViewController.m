@@ -16,12 +16,12 @@
     
 }
 
-#pragma mark -- PRIVATE Properties
+#pragma mark --> PRIVATE Properties
 
 @property (weak, nonatomic) LEDTISensorTag *sensorTag;
 @property (strong, nonatomic) NSArray *cbpPeripheralsFound;
 
-#pragma mark -- IBOutlet Properties (handles to UI objects in view)
+#pragma mark --> IBOutlet Properties (handles to UI objects in view)
 
 @property (weak, nonatomic) IBOutlet UILabel *lblDeviceName;
 
@@ -41,17 +41,17 @@
 @property (weak, nonatomic) IBOutlet UILabel *lblBaroTempInF;
 @property (weak, nonatomic) IBOutlet UILabel *lblBaroPressure;
 
-#pragma mark -- IBAction Methods (Methods responding to user interaction)
+#pragma mark --> IBAction Methods (Methods responding to user interaction)
 
 - (IBAction)OnTempSwValueChanged:(UISwitch *)sender;
 - (IBAction)OnHumidSwValueChanged:(UISwitch *)sender;
 - (IBAction)OnBaroSwValueChanged:(UISwitch *)sender;
 
-#pragma mark -- PRIVATE (Utility) Methods
+#pragma mark --> PRIVATE (Utility) Methods
 
 -(void)enableUI:(BOOL)enable;
 
-#pragma mark -- PRIVATE NSNotificationCenter Callback Methods
+#pragma mark ---> PRIVATE NSNotificationCenter Callback Methods
 
 - (void)deviceReady:(NSNotification *)notification;
 - (void)valueUpdated:(NSNotification *)notification;
@@ -64,7 +64,7 @@
 
 @implementation LEDTempsViewController
 
-#pragma mark -- View Override Methods
+#pragma mark --> View Override Methods
 
 - (void)viewDidLoad
 {
@@ -138,7 +138,7 @@
     }
 }
 
-#pragma mark -- PRIVATE (Utility) Methods
+#pragma mark --> PRIVATE (Utility) Methods
 
 -(void)enableUI:(BOOL)enable
 {
@@ -150,7 +150,29 @@
 }
 
 
-#pragma mark -- NSNotificationCenter Callback Methods
+#pragma mark --> IBAction Methods (Methods responding to user interaction)
+
+- (IBAction)OnTempSwValueChanged:(UISwitch *)sender
+{
+    NSString *strOnInterp = (sender.on) ? @"ON" : @"Off";
+    DLog(@"- Temp Sensor Updating is now: %@", strOnInterp);
+    self.sensorTag.tempEnable = sender.on;
+}
+
+- (IBAction)OnHumidSwValueChanged:(UISwitch *)sender
+{
+    NSString *strOnInterp = (sender.on) ? @"ON" : @"Off";
+    DLog(@"- Humidity Sensor Updating is now: %@", strOnInterp);
+    self.sensorTag.humidityEnable = sender.on;
+}
+
+- (IBAction)OnBaroSwValueChanged:(UISwitch *)sender {
+    NSString *strOnInterp = (sender.on) ? @"ON" : @"Off";
+    DLog(@"- Humidity Sensor Updating is now: %@", strOnInterp);
+    self.sensorTag.barometerEnable = sender.on;
+}
+
+#pragma mark --> NSNotificationCenter Callback Methods
 
 - (void)deviceReady:(NSNotification *)notification
 {
@@ -206,27 +228,5 @@
     }
 }
 
-
-#pragma mark -- IBAction Methods (Methods responding to user interaction)
-
-- (IBAction)OnTempSwValueChanged:(UISwitch *)sender
-{
-    NSString *strOnInterp = (sender.on) ? @"ON" : @"Off";
-    DLog(@"- Temp Sensor Updating is now: %@", strOnInterp);
-    self.sensorTag.tempEnable = sender.on;
-}
-
-- (IBAction)OnHumidSwValueChanged:(UISwitch *)sender
-{
-    NSString *strOnInterp = (sender.on) ? @"ON" : @"Off";
-    DLog(@"- Humidity Sensor Updating is now: %@", strOnInterp);
-    self.sensorTag.humidityEnable = sender.on;
-}
-
-- (IBAction)OnBaroSwValueChanged:(UISwitch *)sender {
-    NSString *strOnInterp = (sender.on) ? @"ON" : @"Off";
-    DLog(@"- Humidity Sensor Updating is now: %@", strOnInterp);
-    self.sensorTag.barometerEnable = sender.on;
-}
 
 @end

@@ -16,20 +16,12 @@
 
 #pragma mark CLASS ISPLowEnergyManager - PRIVATE Interface
 
-
 @interface ISPLowEnergyManager () {
-	BOOL    m_bPendingInit;
-    NSUInteger m_nMaxServices;
-    BOOL m_bDiscoveringIncludedServices;
-    NSUInteger m_nNextServiceToCheck;
-    BOOL m_bDiscoveringCharacteristics;
-    NSUInteger m_nNextServiceCharacteristicsToCheck;
-    BOOL m_bIsScanningEnabled;
-    CBCentralManagerState m_cmsPreviousState;
+    
 }
 
 
-#pragma mark -- PRIVATE PROPERTIES
+#pragma mark --> PRIVATE PROPERTIES
 
 @property (strong, nonatomic) CBCentralManager  *cbcManager;
 @property (strong, nonatomic) CBPeripheral      *cbpConnectedDevice;
@@ -39,7 +31,12 @@
 @property (strong, nonatomic) NSMutableArray	*foundDescriptors;
 @property (strong, nonatomic) NSTimer *scanTimer;
 
-#pragma mark -- PRIVATE (Utility) Methods
+
+//#pragma mark --> PRIVATE Interface-builder Outlet Properties
+
+//#pragma mark --> PRIVATE Interface-builder Action Methods
+
+#pragma mark --> PRIVATE (Utility) Methods
 
 - (void)loadSavedDevices;
 - (void)addSavedDevice:(CFUUIDRef)uuid;
@@ -60,10 +57,28 @@
 
 #pragma mark - CLASS ISPLowEnergyManager - Implemention
 
-@implementation ISPLowEnergyManager
+@implementation ISPLowEnergyManager {
+	BOOL    m_bPendingInit;
+    NSUInteger m_nMaxServices;
+    BOOL m_bDiscoveringIncludedServices;
+    NSUInteger m_nNextServiceToCheck;
+    BOOL m_bDiscoveringCharacteristics;
+    NSUInteger m_nNextServiceCharacteristicsToCheck;
+    BOOL m_bIsScanningEnabled;
+    CBCentralManagerState m_cmsPreviousState;
+}
+
+#pragma mark --> PUBLIC Property Synthesis Overrides
+
+- (NSArray *)peripherals
+{
+    return self.foundPeripherals;
+}
 
 
-#pragma mark - CLASS METHODS
+//#pragma mark --> PRIVATE Property Synthesis Overrides
+
+#pragma mark --> CLASS (Static) Methods
 
 + (id) sharedInstance
 {
@@ -77,7 +92,10 @@
 	return this;
 }
 
-#pragma mark -- Instance Methods
+
+//#pragma mark --> PUBLIC Property Overrides
+
+#pragma mark --> PUBLIC Instance Methods
 
 const NSTimeInterval ktiDefaultDurationInSeconds = 1.0;
 const NSUInteger knDefaultNumberOfDevicesToLocate = 1;
@@ -106,7 +124,6 @@ const NSUInteger knDefaultNumberOfDevicesToLocate = 1;
     return self;
 }
 
-
 - (void) dealloc
 {
     DLog(@"- self=[%@]", self);
@@ -115,114 +132,6 @@ const NSUInteger knDefaultNumberOfDevicesToLocate = 1;
     NSAssert(false, @"dealloc should NOT be called on singleton!!!");
 }
 
-#pragma mark --- Device cache methods
-
-- (void)loadSavedDevices
-{
-    DLog(@"- ENTRY");
-	NSArray	*storedDevicesAr	= [[NSUserDefaults standardUserDefaults] arrayForKey:@"StoredDevices"];
-
-	if (![storedDevicesAr isKindOfClass:[NSArray class]]) {
-        DLog(@"  -- No stored array to load");
-    }
-    else
-    {
-        DLog(@"  -- Loaded [%@]", storedDevicesAr);
-        for (id deviceUUIDString in storedDevicesAr) {
-
-            if (![deviceUUIDString isKindOfClass:[NSString class]])
-                continue;
-
-            CFUUIDRef uuid = CFUUIDCreateFromString(NULL, (CFStringRef)deviceUUIDString);
-            if (!uuid)
-                continue;
-
-            [self.cbcManager retrievePeripherals:[NSArray arrayWithObject:(__bridge id)uuid]];
-            CFRelease(uuid);
-        }
-    }
-    
-    DLog(@"- EXIT");
-}
-
-
-- (void)addSavedDevice:(CFUUIDRef)uuid
-{
-	NSArray			*storedDevicesAr	= [[NSUserDefaults standardUserDefaults] arrayForKey:@"StoredDevices"];
-	NSMutableArray	*updatedDevicesAr	= nil;
-	CFStringRef		uuidString		= NULL;
-
-    DLog(@"- ENTRY");
-    
-	if (![storedDevicesAr isKindOfClass:[NSArray class]]) {
-        DLog(@"  -- Can't find/create an array to store the uuid");
-    }
-    else
-    {
-        updatedDevicesAr = [NSMutableArray arrayWithArray:storedDevicesAr];
-
-        uuidString = CFUUIDCreateString(NULL, uuid);
-        if (uuidString) {
-            [updatedDevicesAr addObject:(__bridge NSString*)uuidString];
-            CFRelease(uuidString);
-        }
-        /* Store */
-        DLog(@"  -- stored device list [%@]", updatedDevicesAr);
-        [[NSUserDefaults standardUserDefaults] setObject:updatedDevicesAr forKey:@"StoredDevices"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
-
-    DLog(@"- EXIT");
-}
-
-
-- (void)removeSavedDevice:(CFUUIDRef)uuid
-{
-	NSArray			*storedDevicesAr	= [[NSUserDefaults standardUserDefaults] arrayForKey:@"StoredDevices"];
-	NSMutableArray	*updatedDevicesAr		= nil;
-	CFStringRef		uuidString		= NULL;
-
-    DLog(@"- ENTRY");
-	if (![storedDevicesAr isKindOfClass:[NSArray class]]) {
-        DLog(@"  -- Can't find/create an array to store the uuid");
-    }
-    else
-    {
-		updatedDevicesAr = [NSMutableArray arrayWithArray:storedDevicesAr];
-
-		uuidString = CFUUIDCreateString(NULL, uuid);
-		if (uuidString) {
-			[updatedDevicesAr removeObject:(__bridge NSString*)uuidString];
-            CFRelease(uuidString);
-        }
-		/* Store */
-        DLog(@"  -- rewrite updated device list [%@]", updatedDevicesAr);
-		[[NSUserDefaults standardUserDefaults] setObject:updatedDevicesAr forKey:@"StoredDevices"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
-	}
-    DLog(@"- EXIT");
-}
-
-- (void)clearDevices
-{
-    DLog(@"");
-    [self.foundPeripherals removeAllObjects];
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_ALL_DEVICES_REMOVED object:nil];
-
-//    for (LeTemperatureAlarmService	*service in connectedServices) {
-//        [service reset];
-//    }
-//    [connectedServices removeAllObjects];
-}
-
-
-- (NSArray *)peripherals
-{
-    return self.foundPeripherals;
-}
-
-#pragma mark --- PUBLIC Instance Methods
 
 - (void)enableScanningWhenReady
 {
@@ -233,7 +142,6 @@ const NSUInteger knDefaultNumberOfDevicesToLocate = 1;
         [self startScanningForUUIDString:self.searchUUID];
     }
 }
-
 
 - (void) startScanningForUUIDString:(NSString *)uuidString
 {
@@ -328,7 +236,7 @@ const NSUInteger knDefaultNumberOfDevicesToLocate = 1;
     return nuLatestRSSI;
 }
 
-#pragma mark --- PRIVATE (Utility) Methods
+#pragma mark --> PRIVATE (Utility) Methods
 
 -(NSString *)descriptionOfError:(NSError *)error
 {
@@ -396,6 +304,107 @@ const NSUInteger knDefaultNumberOfDevicesToLocate = 1;
             m_bDiscoveringCharacteristics = NO;
         }
     }
+}
+
+#pragma mark ---> (Device cache methods)
+
+- (void)loadSavedDevices
+{
+    DLog(@"- ENTRY");
+	NSArray	*storedDevicesAr	= [[NSUserDefaults standardUserDefaults] arrayForKey:@"StoredDevices"];
+
+	if (![storedDevicesAr isKindOfClass:[NSArray class]]) {
+        DLog(@"  -- No stored array to load");
+    }
+    else
+    {
+        DLog(@"  -- Loaded [%@]", storedDevicesAr);
+        for (id deviceUUIDString in storedDevicesAr) {
+
+            if (![deviceUUIDString isKindOfClass:[NSString class]])
+                continue;
+
+            CFUUIDRef uuid = CFUUIDCreateFromString(NULL, (CFStringRef)deviceUUIDString);
+            if (!uuid)
+                continue;
+
+            [self.cbcManager retrievePeripherals:[NSArray arrayWithObject:(__bridge id)uuid]];
+            CFRelease(uuid);
+        }
+    }
+
+    DLog(@"- EXIT");
+}
+
+
+- (void)addSavedDevice:(CFUUIDRef)uuid
+{
+	NSArray			*storedDevicesAr	= [[NSUserDefaults standardUserDefaults] arrayForKey:@"StoredDevices"];
+	NSMutableArray	*updatedDevicesAr	= nil;
+	CFStringRef		uuidString		= NULL;
+
+    DLog(@"- ENTRY");
+
+	if (![storedDevicesAr isKindOfClass:[NSArray class]]) {
+        DLog(@"  -- Can't find/create an array to store the uuid");
+    }
+    else
+    {
+        updatedDevicesAr = [NSMutableArray arrayWithArray:storedDevicesAr];
+
+        uuidString = CFUUIDCreateString(NULL, uuid);
+        if (uuidString) {
+            [updatedDevicesAr addObject:(__bridge NSString*)uuidString];
+            CFRelease(uuidString);
+        }
+        /* Store */
+        DLog(@"  -- stored device list [%@]", updatedDevicesAr);
+        [[NSUserDefaults standardUserDefaults] setObject:updatedDevicesAr forKey:@"StoredDevices"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+
+    DLog(@"- EXIT");
+}
+
+
+- (void)removeSavedDevice:(CFUUIDRef)uuid
+{
+	NSArray			*storedDevicesAr	= [[NSUserDefaults standardUserDefaults] arrayForKey:@"StoredDevices"];
+	NSMutableArray	*updatedDevicesAr		= nil;
+	CFStringRef		uuidString		= NULL;
+
+    DLog(@"- ENTRY");
+	if (![storedDevicesAr isKindOfClass:[NSArray class]]) {
+        DLog(@"  -- Can't find/create an array to store the uuid");
+    }
+    else
+    {
+		updatedDevicesAr = [NSMutableArray arrayWithArray:storedDevicesAr];
+
+		uuidString = CFUUIDCreateString(NULL, uuid);
+		if (uuidString) {
+			[updatedDevicesAr removeObject:(__bridge NSString*)uuidString];
+            CFRelease(uuidString);
+        }
+		/* Store */
+        DLog(@"  -- rewrite updated device list [%@]", updatedDevicesAr);
+		[[NSUserDefaults standardUserDefaults] setObject:updatedDevicesAr forKey:@"StoredDevices"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+	}
+    DLog(@"- EXIT");
+}
+
+- (void)clearDevices
+{
+    DLog(@"");
+    [self.foundPeripherals removeAllObjects];
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_ALL_DEVICES_REMOVED object:nil];
+
+    //    for (LeTemperatureAlarmService	*service in connectedServices) {
+    //        [service reset];
+    //    }
+    //    [connectedServices removeAllObjects];
 }
 
 
