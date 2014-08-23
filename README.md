@@ -5,6 +5,10 @@
 > REF blog-post about this object at
 > http://ironsheep-ios-fun.blogspot.com/2013/04/simplifying-pattern-for-application.html
 
+**— Update: 2014 Aug 22: 23:05L**
+
+-   -   add License and Copyright
+
 **— Update: 2014 Aug 22: 22:23L**
 
 -   -   cleanup code organization (& internal markings)
@@ -34,4 +38,19 @@ couple of days… (posted 22 Aug 2014)*
         Bluetooth LE device) instead of the desired device. - This says
         this isn’t my latest version of this manager.
 
+Code in this Repostory is Copyright 2014 ©, Iron Sheep Productions, LLC,
+except for the two external components found herein which belong to
+their respective owners:
 
+1: MDProgressHUB - Version 0.4 - Created by Matej Bukovinski on 2.4.09.
+
+<https://github.com/jdg/MBProgressHUD>
+
+2: CustomAlert - Created by Aaron Crabtree on 10/14/11 - Copyright (c)
+2011 Tap Dezign, LLC. All rights reserved. (Found at
+<http://code.tutsplus.com/tutorials/ios-sdk-uialertview-custom-graphics--mobile-8886>)
+
+Except for the two external pieces just identified, the remaining code
+is distributed under the [MIT license][]
+
+  [MIT license]: https://github.com/ironsheep/ISPLowEnergyManager/blob/master/LICENSE
