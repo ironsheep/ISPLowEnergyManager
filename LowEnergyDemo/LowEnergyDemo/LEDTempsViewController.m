@@ -100,14 +100,13 @@
     DLog(@"");
     [super viewWillAppear:animated];
 
+    // unregister observation handlers
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+
     // disnable notifcations
     self.sensorTag.tempNotify = NO;
     self.sensorTag.humidityNotify = NO;
     self.sensorTag.barometerNotify = NO;
-
-    //[self.sensorTag removeBlocksForViewController:self];
-    // unregister observation handlers
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)didReceiveMemoryWarning

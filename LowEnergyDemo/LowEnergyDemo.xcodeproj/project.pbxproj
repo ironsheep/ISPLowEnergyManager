@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DC0ECA9619A88EAC00BB1F11 /* LEDAboutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DC0ECA9519A88EAC00BB1F11 /* LEDAboutViewController.m */; };
 		DC42941C19A7EC5B00763CF3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC42941B19A7EC5B00763CF3 /* Foundation.framework */; };
 		DC42941E19A7EC5B00763CF3 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC42941D19A7EC5B00763CF3 /* CoreGraphics.framework */; };
 		DC42942019A7EC5B00763CF3 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC42941F19A7EC5B00763CF3 /* UIKit.framework */; };
@@ -65,6 +66,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		DC0ECA9419A88EAC00BB1F11 /* LEDAboutViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LEDAboutViewController.h; sourceTree = "<group>"; };
+		DC0ECA9519A88EAC00BB1F11 /* LEDAboutViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LEDAboutViewController.m; sourceTree = "<group>"; };
 		DC42941819A7EC5B00763CF3 /* LowEnergyDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LowEnergyDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC42941B19A7EC5B00763CF3 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		DC42941D19A7EC5B00763CF3 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -166,6 +169,8 @@
 			children = (
 				DC42945619A7ECE800763CF3 /* DVC-TISensorTag */,
 				DC42943919A7EC5B00763CF3 /* Images.xcassets */,
+				DC0ECA9419A88EAC00BB1F11 /* LEDAboutViewController.h */,
+				DC0ECA9519A88EAC00BB1F11 /* LEDAboutViewController.m */,
 				DC42946219A7ECE800763CF3 /* LEDAccelViewController.h */,
 				DC42946319A7ECE800763CF3 /* LEDAccelViewController.m */,
 				DC42942A19A7EC5B00763CF3 /* LEDAppDelegate.h */,
@@ -394,6 +399,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DC42946719A7ECE900763CF3 /* CBService+MyServices.m in Sources */,
+				DC0ECA9619A88EAC00BB1F11 /* LEDAboutViewController.m in Sources */,
 				DC42942C19A7EC5B00763CF3 /* LEDAppDelegate.m in Sources */,
 				DC42946919A7ECE900763CF3 /* LEDPayloadUtils.m in Sources */,
 				DC42942819A7EC5B00763CF3 /* main.m in Sources */,

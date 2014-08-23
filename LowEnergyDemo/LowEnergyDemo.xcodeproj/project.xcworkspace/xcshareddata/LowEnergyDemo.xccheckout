@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>4F5AC139-72AD-45B7-B61E-0F62C5F08186</string>
+	<key>IDESourceControlProjectName</key>
+	<string>LowEnergyDemo</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>CA49308E-5917-46F2-8014-6520E3EE67BB</key>
+		<string>https://github.com/ironsheep/ISPLowEnergyManager.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>LowEnergyDemo/LowEnergyDemo.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>CA49308E-5917-46F2-8014-6520E3EE67BB</key>
+		<string>../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/ironsheep/ISPLowEnergyManager.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>CA49308E-5917-46F2-8014-6520E3EE67BB</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>CA49308E-5917-46F2-8014-6520E3EE67BB</string>
+			<key>IDESourceControlWCCName</key>
+			<string>ISPLowEnergyManager</string>
+		</dict>
+	</array>
+</dict>
+</plist>

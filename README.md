@@ -9,6 +9,13 @@
 
 **— Update: 2014 Aug 22: 23:05L**
 
+-   add About Tab
+-   iPad is now working
+-   new App Icon
+-   new tab icons
+
+**— Update: 2014 Aug 22: 23:05L**
+
 -   add License and Copyright
 
 **— Update: 2014 Aug 22: 22:23L**
