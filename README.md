@@ -46,25 +46,16 @@ Code in this Repostory is Copyright 2014 ©, Iron Sheep Productions, LLC,
 except for the two external components found herein which belong to
 their respective owners:
 
-+-----------------------+-----------------------+
-| 1:MDProgressHUD       |  Version 0.4 -        |
-|                       | Created by Matej      |
-|                       | Bukovinski on 2.4.09. |
-|                       | [MBProgressHUD at     |
-|                       | github][]             |
-+-----------------------+-----------------------+
-| 2:CustomAlert         | Created by Aaron      |
-|                       | Crabtree on 10/14/11  |
-|                       | - Copyright (c) 2011  |
-|                       | Tap Dezign, LLC. All  |
-|                       | rights reserved. [Via |
-|                       | Blog Post][]          |
-+-----------------------+-----------------------+
+1:MDProgressHUD:Version 0.4 - Created by Matej Bukovinski on 2.4.09.
+[MBProgressHUD at github][]
+
+2:CustomAlert:Created by Aaron Crabtree on 10/14/11 - Copyright (c) 2011
+Tap Dezign, LLC. All rights reserved. [Via Blog Post][]
 
 ### License
 
-Excluding the two external pieces just identified, the remaining code
-is distributed under the [MIT license][]
+Excluding the two external pieces just identified, the remaining code is
+distributed under the [MIT license][]
 
   [MBProgressHUD at github]: http://github.com/jdg/MBProgressHUD
   [Via Blog Post]: http://code.tutsplus.com/tutorials/ios-sdk-uialertview-custom-graphics--mobile-8886
