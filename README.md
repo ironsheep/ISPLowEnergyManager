@@ -25,7 +25,7 @@
 
 -   iPhone working against TI Sensor Tag
 
--   —\> No U/I yet for iPad (it's next)
+-   PENDING: No U/I yet for iPad (it's next)
 
 **— Update: 2014 Aug 22: 17:00L**
 
@@ -34,7 +34,7 @@ revisiting it now to ensure I’ve posted the latest working code. I’ll
 update the following status as each piece is completed over the next
 couple of days… (posted 22 Aug 2014)*
 
--   —\> Ipad i/f is not yet setup...
+-   PENDING: Ipad i/f is not yet setup...
 
 -   Current code compiles and runs but finds the first (likely wrong
     Bluetooth LE device) instead of the desired device. - This says this
