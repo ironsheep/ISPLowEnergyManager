@@ -7,12 +7,13 @@
 
 ### Changelog
 
-**— Update: 2014 Aug 22: 23:05L**
+**— Update: 2014 Aug 23: 04:22L**
 
--   add About Tab
+-   Added About Tab
 -   iPad is now working
--   new App Icon
--   new tab icons
+-   New App Icon
+-   New tab icons
+-   Spotted: interesting BUG in object temperature math (Oops!)
 
 **— Update: 2014 Aug 22: 23:05L**
 

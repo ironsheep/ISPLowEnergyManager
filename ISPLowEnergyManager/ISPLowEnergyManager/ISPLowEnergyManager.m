@@ -145,7 +145,7 @@ const NSUInteger knDefaultNumberOfDevicesToLocate = 1;
 
 - (void) startScanningForUUIDString:(NSString *)uuidString
 {
-    [self.foundPeripherals removeAllObjects];
+    [self clearDevices]; // with notification!
     
     self.searchUUID = uuidString;
 
@@ -400,11 +400,6 @@ const NSUInteger knDefaultNumberOfDevicesToLocate = 1;
     [self.foundPeripherals removeAllObjects];
 
     [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_ALL_DEVICES_REMOVED object:nil];
-
-    //    for (LeTemperatureAlarmService	*service in connectedServices) {
-    //        [service reset];
-    //    }
-    //    [connectedServices removeAllObjects];
 }
 
 
@@ -536,6 +531,7 @@ const CBCentralManagerState kcmsNeverSetState = (CBCentralManagerState)-1;
         CustomAlertView *alert = [[CustomAlertView alloc] initWithTitle:NSLocalizedString(@"Disconnected", @"") message:peripheral.name delegate:self cancelButtonTitle:NSLocalizedString(@"OK",@"") otherButtonTitles: nil];
         [alert show];
     }
+
     DLog(@"*** Restart SCAN")
     [self startScanningForUUIDString:self.searchUUID];
 }

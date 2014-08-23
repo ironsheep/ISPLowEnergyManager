@@ -89,6 +89,7 @@
 
     // register notification handlers
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(discoverBLEDevicesEnded:) name:kPERIPHERAL_SCAN_ENDED_NOTIFICATION object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceNoLongerReady:) name:kDEVICE_IS_NO_LONGER_READY object:nil];
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(valueUpdated:) name:kCHARACTERISTIC_VALUE_UPDATED object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceReady:) name:kDEVICE_IS_READY_FOR_ACCESS object:nil];
@@ -263,6 +264,20 @@
     self.swAccelEnable.on = self.sensorTag.accelerometerEnable;
     self.swGyroEnable.on = self.sensorTag.gyroscopeEnable;
     self.swMagnetoEnable.on = self.sensorTag.magnetometerEnable;
+}
+
+- (void)deviceNoLongerReady:(NSNotification *)notification
+{
+    DLog(@"");
+    self.lblDeviceName.text = @"?? device gone ??";
+
+
+    self.swAccelEnable.on = NO;
+    self.swGyroEnable.on = NO;
+    self.swMagnetoEnable.on = NO;
+
+    // device is ready, allow our user to interact!
+    [self enableUI:NO];
 }
 
 

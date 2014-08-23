@@ -9,6 +9,7 @@
 #import "LEDTempsViewController.h"
 #import "LEDTISensorTag.h"
 #import "LEDGattConsts.h"
+#import "MBProgressHUD.h"
 
 #pragma mark CLASS LEDTempsViewController PRIVATE interface
 
@@ -20,6 +21,7 @@
 
 @property (weak, nonatomic) LEDTISensorTag *sensorTag;
 @property (strong, nonatomic) NSArray *cbpPeripheralsFound;
+@property (strong, nonatomic) MBProgressHUD *HUD;
 
 #pragma mark --> IBOutlet Properties (handles to UI objects in view)
 
@@ -95,6 +97,17 @@
     }
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    DLog(@"");
+    [super viewDidAppear:animated];
+    if(!self.sensorTag.isDeviceReady)
+    {
+        self.HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        self.HUD.labelText = @"Looking for TI Sensor Tags";
+    }
+}
+
 -(void)viewWillDisappear:(BOOL)animated
 {
     DLog(@"");
@@ -102,6 +115,11 @@
 
     // unregister observation handlers
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+
+    if(!self.HUD.isHidden)
+    {
+        [self.HUD hide:YES];
+    }
 
     // disnable notifcations
     self.sensorTag.tempNotify = NO;
@@ -121,19 +139,33 @@
 {
     DLog(@" - notification=[%@]", notification);
 
-    NSAssert([notification.object isKindOfClass:[NSArray class]], @"ERROR this is NOT a NSArray?!  What broke???");
-
-    NSArray *cbpPanelsFoundAr = notification.object;
-    self.cbpPeripheralsFound = cbpPanelsFoundAr;
-
-    // if we've more than one panel, let's prompt for which we are to use...
-    if(cbpPanelsFoundAr.count > 1)
+    if(notification.object == nil)
     {
-        [self performSegueWithIdentifier:@"selectDevice" sender:self];
+        // we ended without finding any objects!
+        if(!self.HUD.isHidden)
+        {
+            [self.HUD hide:YES];
+        }
+
+        UIAlertView *avAlert = [[UIAlertView alloc] initWithTitle:@"BTLE Demo: Alert" message:@"No TI Sensor Tag devices found!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+        [avAlert show];
     }
     else
     {
-        [self deviceReady:notification];
+        NSAssert([notification.object isKindOfClass:[NSArray class]], @"ERROR this is NOT a NSArray?!  What broke???");
+
+        NSArray *cbpPanelsFoundAr = notification.object;
+        self.cbpPeripheralsFound = cbpPanelsFoundAr;
+
+        // if we've more than one panel, let's prompt for which we are to use...
+        if(cbpPanelsFoundAr.count > 1)
+        {
+            [self performSegueWithIdentifier:@"selectDevice" sender:self];
+        }
+        else
+        {
+            [self deviceReady:notification];
+        }
     }
 }
 
@@ -187,6 +219,11 @@
     
     self.sensorTag.barometerCalibrate = YES;
     [self.sensorTag readCharacteristicUUIDString:kBARO_CALI_CHRSTC];
+
+    if(!self.HUD.isHidden)
+    {
+        [self.HUD hide:YES];
+    }
 
     [self enableUI:YES];
     

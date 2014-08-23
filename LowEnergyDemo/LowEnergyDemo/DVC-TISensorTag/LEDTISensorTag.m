@@ -123,6 +123,7 @@
 }
 
 NSString *kDEVICE_IS_READY_FOR_ACCESS = @"DEVICE_IS_READY_FOR_ACCESS";
+NSString *kDEVICE_IS_NO_LONGER_READY = @"DEVICE_IS_NO_LONGER_READY";
 NSString *kCHARACTERISTIC_VALUE_UPDATED = @"CHARACTERISTIC_VALUE_UPDATED";
 NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_SCAN_ENDED";
 
@@ -210,6 +211,8 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(discoverBLEDeviceCharacteristicDescriptorsSuccess:) name:kNOTIFICATION_DEVICE_DISCOVERED_CHARACTERISTIC_DESCRIPTORS object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateValueForCharacteristic:) name:kNOTIFICATION_DEVICE_UPDATED_CHARACTERISTIC_VALUE object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateNotifyStateForCharacteristic:) name:kNOTIFICATION_DEVICE_UPDATED_CHARACTERISTIC_NOTIF_STATE object:nil];
+
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleDevicesGone:) name:kNOTIFICATION_ALL_DEVICES_REMOVED object:nil];
 
         // now, proceed to find devices when ready...
         [self.btLEManager enableScanningWhenReady];
@@ -373,6 +376,7 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
     if(cbpPanelsFoundAr.count == 0)
     {
         DLog(@"*** No TI devices found!")
+        [[NSNotificationCenter defaultCenter] postNotificationName:kPERIPHERAL_SCAN_ENDED_NOTIFICATION object:nil];
     }
     else if(cbpPanelsFoundAr.count == 1)
     {
@@ -812,6 +816,14 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
     NSAssert([notification.object isKindOfClass:[ISPPeripheralTriadParameter class]], @"ERROR this is NOT a ISPPeripheralTriadParameter?!  What broke???");
     ISPPeripheralTriadParameter *infoObject = notification.object;
     DLog(@"- triad=[%@]", infoObject);
+}
+
+- (void)handleDevicesGone:(NSNotification *)notification
+{
+    DLog(@"- notification=[%@]", notification);
+    NSAssert(notification.object == nil, @"ERROR there should be NO object?!  What broke???");
+    self.deviceReady = NO; // let others see if we have lost our connection...
+    [[NSNotificationCenter defaultCenter] postNotificationName:kDEVICE_IS_NO_LONGER_READY object:nil];
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification

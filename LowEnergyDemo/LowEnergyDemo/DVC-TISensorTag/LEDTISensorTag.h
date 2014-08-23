@@ -21,6 +21,7 @@
 typedef void (^LEDCharacteristicValueUpdatedBlock)(NSString *);
 
 extern NSString *kDEVICE_IS_READY_FOR_ACCESS;
+extern NSString *kDEVICE_IS_NO_LONGER_READY;
 extern NSString *kCHARACTERISTIC_VALUE_UPDATED;
 extern NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION;
 
