@@ -12,6 +12,12 @@
 
 ### Changelog
 
+**— Update: 2014 Oct 05: 20:29L**
+
+-   LowEnergyManager: Added Alternate form of device discovery with deferred operation scheduling
+
+-   Demo App: converted Temp View Controller to use new "blocks" form of communication with SensorTag object
+
 **— Update: 2014 Aug 23: 04:22L**
 
 -   Added About Tab
