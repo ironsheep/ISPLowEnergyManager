@@ -11,6 +11,8 @@
 
 #import <Foundation/Foundation.h>
 
+@class CBPeripheral;
+
 #pragma mark CLASS LEDTISensorTag - PUBLIC Interface
 
 @interface LEDTISensorTag : NSObject {
@@ -18,7 +20,7 @@
 }
 
 // Declare block function
-typedef void (^LEDCharacteristicValueUpdatedBlock)(NSString *);
+typedef void (^SensorTagCharacteristicValueUpdatedBlock)(NSString *);
 
 extern NSString *kDEVICE_IS_READY_FOR_ACCESS;
 extern NSString *kDEVICE_IS_NO_LONGER_READY;
@@ -88,11 +90,25 @@ extern NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION;
 
 #pragma mark --> PUBLIC Instance METHODS
 
-// form expecting Notification Center notify of operation complete
+// if initial scan doesn't find any Sensor Tags, then invoke rescan when user wants to try again
+//   (object automatically scans are startup!)
+- (void)rescanForTags;
+
+// once one or more tags are found select the one to which we want to connect
+- (void)selectTag:(CBPeripheral *)device;
+
+// form expecting Notification Center to notify of operation complete
 -(void)readCharacteristicUUIDString:(NSString *)UUIDString;
 
-// form when using blocks for completion handling
--(void)readCharacteristicUUIDString:(NSString *)UUIDString completion:(LEDCharacteristicValueUpdatedBlock)callback;
+// form when using block for completion handling
+-(void)readCharacteristicUUIDString:(NSString *)UUIDString observer:(UIViewController *)viewController completion:(SensorTagCharacteristicValueUpdatedBlock)callback;
 
+
+// REGISTER-HANDLER form when using blocks for completion handling
+-(void)scheduleHandlingOfCharacteristicUUIDString:(NSString *)UUIDString observer:(UIViewController *)viewController completion:(SensorTagCharacteristicValueUpdatedBlock)callback;
+
+// forms for cleaning up registration of blocks (or for preventing multi-registration of blocks)
+- (BOOL)haveBlocksForViewController:(UIViewController *)viewController;
+- (void)removeBlocksForViewController:(UIViewController *)viewController;
 
 @end

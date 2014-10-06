@@ -9,11 +9,9 @@
 #import "CBService+Methods.h"
 #import "objc/runtime.h"
 
-#pragma mark CATEGORY CBService(Methods) Implementation
-
 @implementation CBService (Methods)
 
-#pragma mark --> PUBLIC Property Setters/Getters
+#pragma mark -- Property Setters/Getters
 
 
 // See: http://ddeville.me/2011/03/add-variables-to-an-existing-class-in-objective-c/
@@ -71,5 +69,16 @@ static char configuredKey;
     }
     return bIsConfiguredStatus;
 }
+
+
+- (NSString *)description
+{
+    NSString *strDescription = [NSString stringWithFormat:@"<%@ 0x%.8x> [UUID=(0x%@)]",
+                                NSStringFromClass([self class]),
+                                (unsigned int)self,
+                                self.UUID.UUIDString];
+    return strDescription;
+}
+
 
 @end

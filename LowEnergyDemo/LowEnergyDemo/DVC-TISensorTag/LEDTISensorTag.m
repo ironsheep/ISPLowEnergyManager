@@ -29,12 +29,12 @@
 #pragma mark --> PRIVATE PROPERTIES
 
 @property (weak, nonatomic) ISPLowEnergyManager *btLEManager;
-@property (strong, nonatomic) MBProgressHUD *progressHUD;
-@property (strong, nonatomic) NSDictionary *dctServices;
-@property (strong, nonatomic) NSDictionary *dctCharacteristics;
-@property (strong, nonatomic) NSDictionary *dctCharacteristicDescriptors;
-@property (strong, nonatomic) NSMutableDictionary *dctCallbacks;
 @property (strong, nonatomic) CBPeripheral *cbpTISensorTag;
+
+@property (strong, nonatomic) MBProgressHUD *progressHUD;
+
+@property (strong, nonatomic) NSMutableDictionary *dctCallbacks;
+
 @property (strong, nonatomic) NSArray *arWritablePropertyKeys;
 
 @property (strong, nonatomic) NSString *deviceName;
@@ -46,7 +46,7 @@
 // Temp Service
 @property (assign, nonatomic) double objectTemp;    // temp DegrC
 @property (assign, nonatomic) double ambientTemp;   // temp DegrC
-// Humidity Service
+                                                    // Humidity Service
 @property (assign, nonatomic) double tempInC;       // temp DegrC
 @property (assign, nonatomic) double relHumidityPercent;  // RH%
 
@@ -56,25 +56,22 @@
 
 // Accelerometer Service
 @property (assign, nonatomic) float accelerometerX;  // +/- G [-2 to +2]
-@property (assign, nonatomic) float accelerometerY;  
-@property (assign, nonatomic) float accelerometerZ;  
+@property (assign, nonatomic) float accelerometerY;
+@property (assign, nonatomic) float accelerometerZ;
 
 // Gyroscope Service
 @property (assign, nonatomic) float gyroscopeX;  // Degr/Sec [-250 to +250]
-@property (assign, nonatomic) float gyroscopeY;  
-@property (assign, nonatomic) float gyroscopeZ;  
+@property (assign, nonatomic) float gyroscopeY;
+@property (assign, nonatomic) float gyroscopeZ;
 
 // Magnetometer Service
 @property (assign, nonatomic) float magnetometerX;  // +/- magnetic force in uTera [-1000 to +1000]
-@property (assign, nonatomic) float magnetometerY;  
-@property (assign, nonatomic) float magnetometerZ;  
+@property (assign, nonatomic) float magnetometerY;
+@property (assign, nonatomic) float magnetometerZ;
 
 #pragma mark --> PRIVATE (Utility) Methods
 
 - (void)discoverBLEDeviceSuccess:(NSNotification *)notification;
-- (void)discoverBLEDeviceServicesSuccess:(NSNotification *)notification;
-- (void)discoverBLEDeviceCharacteristicsSuccess:(NSNotification *)notification;
-- (void)discoverBLEDeviceCharacteristicDescriptorsSuccess:(NSNotification *)notification;
 - (void)updateValueForCharacteristic:(NSNotification *)notification;
 - (void)updateNotifyStateForCharacteristic:(NSNotification *)notification;
 
@@ -131,14 +128,14 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
 
 + (id) sharedInstance
 {
-	static LEDTISensorTag	*s_pSharedSingleInstance= nil;
+    static LEDTISensorTag	*s_pSharedSingleInstance= nil;
 
-	if (!s_pSharedSingleInstance) {
+    if (!s_pSharedSingleInstance) {
         DLog(@"");
-		s_pSharedSingleInstance = [[LEDTISensorTag alloc] init];
+        s_pSharedSingleInstance = [[LEDTISensorTag alloc] init];
     }
 
-	return s_pSharedSingleInstance;
+    return s_pSharedSingleInstance;
 }
 
 +(double)fahrenheitForTempInCentigrade:(double)tempInC
@@ -178,13 +175,14 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
                                        kKeypathGyroscopeEnable,
                                        kKeypathGyroscopeNotify,
                                        nil];
-        
+
         self.progressHUD = [[MBProgressHUD alloc] init];
         self.progressHUD.labelText = @"SCANNING";
         self.progressHUD.detailsLabelText = @"Looking for TI devices";
 
         // if want TI Sensor Tag object:
         self.btLEManager.searchUUID = nil; //kGENERIC_ACCESS_SVC;  //kIR_TEMPERATURE_SVC;
+        self.btLEManager.searchDeviceName = @"TI BLE Sensor Tag";
         self.btLEManager.numberOfDevicesToLocate = 2;
         self.btLEManager.searchDurationInSeconds = 3.0;
 
@@ -199,28 +197,24 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
                       options: NSKeyValueObservingOptionNew	// return the new value in dict
                       context: NULL];
         }
-        
+
         // register notification handlers
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(discoverBLEDevicesStarted:) name:kNOTIFICATION_DEVICE_SCAN_STARTED object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(discoverBLEDevicesEnded:) name:kNOTIFICATION_DEVICE_SCAN_STOPPED object:nil];
 
-
-        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(discoverBLEDeviceSuccess:) name:kNOTIFICATION_ADD_BLE_DEVICE object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(discoverBLEDeviceServicesSuccess:) name:kNOTIFICATION_DEVICE_SERVICES_DISCOVERED object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(discoverBLEDeviceCharacteristicsSuccess:) name:kNOTIFICATION_DEVICE_CHARACTERISTICS_DISCOVERED object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(discoverBLEDeviceCharacteristicDescriptorsSuccess:) name:kNOTIFICATION_DEVICE_DISCOVERED_CHARACTERISTIC_DESCRIPTORS object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateValueForCharacteristic:) name:kNOTIFICATION_DEVICE_UPDATED_CHARACTERISTIC_VALUE object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateNotifyStateForCharacteristic:) name:kNOTIFICATION_DEVICE_UPDATED_CHARACTERISTIC_NOTIF_STATE object:nil];
 
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleDeviceConnected:) name:kNOTIFICATION_CONNECT_BLE_DEVICE_SUCCESS object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleDevicesGone:) name:kNOTIFICATION_ALL_DEVICES_REMOVED object:nil];
 
         // now, proceed to find devices when ready...
-        [self.btLEManager enableScanningWhenReady];
+        [self.btLEManager setDeviceScanEnable:YES];
     }
     return self;
 }
 
-- (void) dealloc
+- (void)dealloc
 {
     DLog(@"");
 
@@ -228,64 +222,92 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
     NSAssert(false, @"dealloc should NOT be called on singleton!!!");
 }
 
+- (void)rescanForTags
+{
+    DLog(@"");
+    [self.btLEManager rescanForPeripherals];
+}
+
+- (void)selectTag:(CBPeripheral *)device
+{
+    DLog(@"- tag=[%@]", device);
+    // one of many choices was presented to user.
+    //  user is now indicating that this is the one we want to use!
+    [self selectDevice:device];
+}
 
 // form expecting Notification Center notify of operation complete
 -(void)readCharacteristicUUIDString:(NSString *)UUIDString
 {
     DLog(@"- UUIDString=[%@]", UUIDString);
-
-    // our Characteristics MUST already be present!
-    NSAssert(self.dctCharacteristics != nil && [self.dctCharacteristics count] > 0, @"[CODE/DATA] ERROR- Characteristics not yet present?!  What broke???");
-
-    CBCharacteristic *desiredChrstc = [self.dctCharacteristics valueForKey:UUIDString];
-    if(desiredChrstc != nil)
-    {
-        DLog(@"- Characteristic=[%@]", desiredChrstc);
-        [self.cbpTISensorTag readValueForCharacteristic:desiredChrstc];
-    }
-    else
-    {
-        DLog(@"ERROR[CODE]: Characteristic [%@] not found!", UUIDString);
-        // our Characteristics MUST already be present!
-        NSAssert(false, @"[CODE] ERROR: Characteristic NOT found?!  Bad UUID?  Char's not read from device yet?");
-    }
+    [self.btLEManager readValueForCharacteristicUUID:UUIDString];
 }
 
-
 // form when using blocks for completion handling
--(void)readCharacteristicUUIDString:(NSString *)UUIDString completion:(LEDCharacteristicValueUpdatedBlock)callback
+-(void)readCharacteristicUUIDString:(NSString *)UUIDString observer:(UIViewController *)viewController completion:(SensorTagCharacteristicValueUpdatedBlock)callback
 {
-    LEDCharacteristicValueUpdatedBlock priorCallback = [self.dctCallbacks objectForKey:UUIDString];
-    NSAssert(priorCallback == nil, @"[CODE] 2nd callback registered with 1st still active!");
+    DLog(@"- UUIDString=[%@]", UUIDString);
+    [self scheduleHandlingOfCharacteristicUUIDString:UUIDString observer:viewController completion:callback];
 
-    // record that we have a callback for this UUID
-    DLog(@"- recording callback for [%@]", UUIDString);
-    [self.dctCallbacks setObject:[callback copy] forKey:UUIDString];
-
-    // now go read ask for the value of the characteristic
+    // now go read/ask for the value of the characteristic
     [self readCharacteristicUUIDString:UUIDString];
 }
 
 -(void)setNotifyValue:(BOOL)enableNotify forCharacteristicUUIDString:(NSString *)UUIDString
 {
-    // our Characteristics MUST already be present!
-    NSAssert(self.dctCharacteristics != nil && [self.dctCharacteristics count] > 0, @"[CODE/DATA] ERROR- Characteristics not yet present?!  What broke???");
-
+#ifdef DEBUG
     NSString *strNotifyEnable = (enableNotify) ? @"ON" : @"Off";
+#endif
     DLog(@"- Notify:[%@] for Characteristic=[%@]", strNotifyEnable, UUIDString);
-    
-    CBCharacteristic *desiredChrstc = [self.dctCharacteristics valueForKey:UUIDString];
-    if(desiredChrstc != nil)
+
+    [self.btLEManager setNotifyValue:enableNotify forCharacteristicUUID:UUIDString];
+}
+
+
+// REGISTER-HANDLER form when using blocks for completion handling
+-(void)scheduleHandlingOfCharacteristicUUIDString:(NSString *)UUIDString observer:(UIViewController *)viewController  completion:(SensorTagCharacteristicValueUpdatedBlock)callback
+{
+    NSString *strCallbackKey = [self keyForViewController:viewController withUUID:UUIDString];
+    SensorTagCharacteristicValueUpdatedBlock priorCallback = [self.dctCallbacks objectForKey:strCallbackKey];
+    if(priorCallback != nil)
     {
-        DLog(@"- Characteristic=[%@]", desiredChrstc);
-        [self.cbpTISensorTag setNotifyValue:enableNotify forCharacteristic:desiredChrstc];
+        DLog(@"- OOPs! found prior scheduled callback for [%@]: Only 1 allowed per Characteristic - key=[%@]", UUIDString.uppercaseString, strCallbackKey);
     }
-    else
-    {
-        DLog(@"ERROR[CODE]: Characteristic [%@] not found!", UUIDString);
-        // our Characteristics MUST already be present!
-        NSAssert(false, @"[CODE] ERROR: Characteristic NOT found?!  Bad UUID?  Char's not read from device yet?");
+    NSAssert(priorCallback == nil, @"[CODE] 2nd callback registered with 1st still active!");
+
+    // record that we have a callback for this UUID
+    DLog(@"- recording callback for [%@]", UUIDString.uppercaseString);
+    [self.dctCallbacks setObject:[callback copy] forKey:strCallbackKey];
+    DLog(@"- added callback for [%@]", strCallbackKey);
+}
+
+- (BOOL)haveBlocksForViewController:(UIViewController *)viewController
+{
+    BOOL bHaveCollbacksStatus = NO;
+    NSString *strCallbackPrefixKey = [self prefixKeyForViewController:viewController];
+    for (NSString *currKey in self.dctCallbacks.allKeys) {
+        if([currKey hasPrefix:strCallbackPrefixKey])
+        {
+            DLog(@"- found callback for [%@]", currKey);
+            bHaveCollbacksStatus = YES;
+            break;  // have answer
+        }
     }
+    return bHaveCollbacksStatus;
+}
+
+- (void)removeBlocksForViewController:(UIViewController *)viewController
+{
+    NSMutableDictionary *dctCallbacksCopy = self.dctCallbacks;
+    NSString *strCallbackPrefixKey = [self prefixKeyForViewController:viewController];
+    for (NSString *currKey in self.dctCallbacks.allKeys) {
+        if([currKey hasPrefix:strCallbackPrefixKey])
+        {
+            [dctCallbacksCopy removeObjectForKey:currKey];
+            DLog(@"- removed callback for [%@]", currKey);
+        }
+    }
+    self.dctCallbacks = dctCallbacksCopy;
 }
 
 #pragma mark --> PRIVATE (Utility) Methods
@@ -294,38 +316,7 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
 {
     DLog(@"- Data=[%@], UUIDString=[%@]", data, UUIDString);
 
-    // our Characteristics MUST already be present!
-    NSAssert(self.dctCharacteristics != nil && [self.dctCharacteristics count] > 0, @"[CODE/DATA] ERROR- Characteristics not yet present?!  What broke???");
-
-    CBCharacteristic *desiredChrstc = [self.dctCharacteristics valueForKey:UUIDString];
-    if(desiredChrstc != nil)
-    {
-        DLog(@"- Characteristic=[%@]", desiredChrstc);
-        [self.cbpTISensorTag writeValue:data forCharacteristic:desiredChrstc type:CBCharacteristicWriteWithResponse];
-    }
-    else
-    {
-        DLog(@"ERROR[CODE]: Characteristic [%@] not found!", UUIDString);
-        // our Characteristics MUST already be present!
-        NSAssert(false, @"[CODE] ERROR: Characteristic NOT found?!  Bad UUID?  Char's not read from device yet?");
-    }
-}
-
--(CBService *)serviceForUUID:(NSString *)UUIDString
-{
-    DLog(@"- UUIDString=[%@]", UUIDString);
-
-    // our Services MUST already be present!
-    NSAssert(self.dctServices != nil && [self.dctServices count] > 0, @"[CODE/DATA] ERROR- Services not yet present?!  What broke???");
-
-    // our service MUST be found!
-    CBService *foundService = [self.dctServices objectForKey:UUIDString];
-    if(foundService == nil)
-    {
-        DLog(@"ERROR[CODE]: Service [%@] not found!", UUIDString);
-    }
-    NSAssert(foundService != nil, @"[CODE]- ERROR missing a Service?!  What broke???");
-    return foundService;
+    [self.btLEManager writeValue:data forCharacteristicUUID:UUIDString type:CBCharacteristicWriteWithResponse];
 }
 
 - (void)selectDevice:(CBPeripheral *)device
@@ -334,6 +325,26 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
     DLog(@"- selected our TI Device: [%@]", self.cbpTISensorTag);
     self.deviceName = self.cbpTISensorTag.name;
     [self.btLEManager connectPeripheral:self.cbpTISensorTag];
+}
+
+- (NSString *)keyForViewController:(UIViewController *)viewController withUUID:(NSString *)UUIDString
+{
+    NSString *strPrefixVCKey = [self prefixKeyForViewController:viewController];
+    NSString *strKeySuffix = [self suffixKeyForUUID:UUIDString];
+    NSString *strCallerWithUUIDKey = [NSString stringWithFormat:@"%@%@", strPrefixVCKey, strKeySuffix];
+    return strCallerWithUUIDKey;
+}
+
+- (NSString *)prefixKeyForViewController:(UIViewController *)viewController
+{
+    NSString *strVCKey = [NSString stringWithFormat:@"vc%lX-", (long)viewController];
+    return strVCKey;
+}
+
+- (NSString *)suffixKeyForUUID:(NSString *)UUIDString
+{
+    NSString *strKeySuffix = [NSString stringWithFormat:@"%@", UUIDString.uppercaseString];
+    return strKeySuffix;
 }
 
 #pragma mark - NSNotificationCenter Callback Methods
@@ -396,44 +407,12 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
     }
 }
 
-- (void)discoverBLEDeviceServicesSuccess:(NSNotification *)notification
-{
-    // validate that we only get this type of object from our callback!
-    NSAssert([notification.object isKindOfClass:[NSDictionary class]], @"ERROR this is NOT a NSDictionary?!  What broke???");
-    self.dctServices = notification.object;
-    DLog(@"- located our Panel-Services: [%@]", self.dctServices);
-}
-
-- (void)discoverBLEDeviceCharacteristicsSuccess:(NSNotification *)notification
-{
-    // validate that we only get this type of object from our callback!
-    NSAssert([notification.object isKindOfClass:[NSDictionary class]], @"ERROR this is NOT a NSDictionary?!  What broke???");
-    self.dctCharacteristics = notification.object;
-    DLog(@"- located our Panel-Characteristics: [%@]", self.dctCharacteristics);
-
-    // NOTE: following two lines are fix for No "Characteristic Descriptors" found on TI Devices ??
-    self.deviceReady = YES; // let others see if we have come ready as well!
-    [[NSNotificationCenter defaultCenter] postNotificationName:kDEVICE_IS_READY_FOR_ACCESS object:nil];
-}
-
-- (void)discoverBLEDeviceCharacteristicDescriptorsSuccess:(NSNotification *)notification
-{
-    // validate that we only get this type of object from our callback!
-    NSAssert([notification.object isKindOfClass:[NSDictionary class]], @"ERROR this is NOT a NSDictionary?!  What broke???");
-    self.dctCharacteristicDescriptors = notification.object;
-    DLog(@"- located our Panel-CharacteristicDescriptors: [%@]", self.dctCharacteristicDescriptors);
-
-    self.deviceReady = YES; // let others see if we have come ready as well!
-                            // tell our listeners that they can now access radio!
-    [[NSNotificationCenter defaultCenter] postNotificationName:kDEVICE_IS_READY_FOR_ACCESS object:nil];
-}
-
 -(double)calcTargetObjectTempFromRaw:(uint16_t)nObjectTemp withAmbient:(double)currAmbient
 {
     //-- calculate target temperature [Â°C] -
     double Vobj2 = (double)nObjectTemp * 1.0;
     Vobj2 *= 0.00000015625;
-    
+
     double Tdie2 = currAmbient + 273.15;
     const double S0 = 6.4E-14;            // Calibration factor
 
@@ -455,9 +434,14 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
 - (void)updateValueForCharacteristic:(NSNotification *)notification
 {
     NSAssert([notification.object isKindOfClass:[ISPPeripheralTriadParameter class]], @"ERROR this is NOT a ISPPeripheralTriadParameter?!  What broke???");
-    ISPPeripheralTriadParameter *infoObject = notification.object;
 
-    NSString *strArrivingChrstcUUID = infoObject.characteristic.UUID.str;
+    ISPPeripheralTriadParameter *infoObject = notification.object;
+    if(infoObject.error != nil)
+    {
+        DLog(@"-- !!! ERROR(%d) %@", infoObject.error.code, infoObject.error.localizedDescription);
+    }
+
+    NSString *strArrivingChrstcUUID = infoObject.characteristic.UUID.UUIDString;
     NSData *dat = infoObject.characteristic.value;
     DLog(@"dat=[%@]", dat);
 
@@ -489,14 +473,14 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
         //  [within Section entitled: "IR Temperature Sensor"]
         //
         const int kREQUIRED_DATA_LEN = 4;
-        NSAssert([dat length] == kREQUIRED_DATA_LEN, @"Incorrect data length [(%d)!=%d]!", [dat length], kREQUIRED_DATA_LEN);
+        NSAssert([dat length] == kREQUIRED_DATA_LEN, @"Incorrect data length [(%lu)!=%d]!", (unsigned long)[dat length], kREQUIRED_DATA_LEN);
 
         uint8_t nValuesAr[kREQUIRED_DATA_LEN];
         [dat getBytes:&nValuesAr[0] length:kREQUIRED_DATA_LEN];
 
         uint16_t nObjectTemp = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[0]];
         uint16_t nAmbientTemp = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[2]];
-        
+
         DLog(@"- IR Svc: amb:0x%.4X, obj:0x%.4X", nAmbientTemp, nObjectTemp);
 
         // if all values are zero then sensor is off and this is "late" notification of value, ignore it!
@@ -508,10 +492,10 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
         {
             //-- calculate die temperature [Â°C] --
             self.ambientTemp = ((double)nAmbientTemp)/128.0;
-            
-             //-- calculate target temperature [Â°C] -
+
+            //-- calculate target temperature [Â°C] -
             self.objectTemp = [self calcTargetObjectTempFromRaw:nObjectTemp withAmbient:self.ambientTemp];
-            
+
             DLog(@"- IR Svc: amb:%.1lf, obj:%.1lf", self.ambientTemp, self.objectTemp);
         }
     }
@@ -523,7 +507,7 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
         //  [within Section entitled: "Humidity Sensor"]
         //
         const int kREQUIRED_DATA_LEN = 4;
-        NSAssert([dat length] == kREQUIRED_DATA_LEN, @"Incorrect data length [(%d)!=%d]!", [dat length], kREQUIRED_DATA_LEN);
+        NSAssert([dat length] == kREQUIRED_DATA_LEN, @"Incorrect data length [(%lu)!=%d]!", (unsigned long)[dat length], kREQUIRED_DATA_LEN);
 
         uint8_t nValuesAr[kREQUIRED_DATA_LEN];
         [dat getBytes:&nValuesAr[0] length:kREQUIRED_DATA_LEN];
@@ -555,13 +539,13 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
         //  [within Section entitled: "Barometric Pressure Sensor"]
         //
         const int kREQUIRED_DATA_LEN = 4;
-        NSAssert([dat length] == kREQUIRED_DATA_LEN, @"Incorrect data length [(%d)!=%d]!", [dat length], kREQUIRED_DATA_LEN);
+        NSAssert([dat length] == kREQUIRED_DATA_LEN, @"Incorrect data length [(%lu)!=%d]!", (unsigned long)[dat length], kREQUIRED_DATA_LEN);
 
         uint8_t nValuesAr[kREQUIRED_DATA_LEN];
         [dat getBytes:&nValuesAr[0] length:kREQUIRED_DATA_LEN];
 
         NSAssert(m_bHaveCalibrationData == YES, @"ERROR!? Calibration has NOT yet arrived!");
-        
+
         uint16_t nBaroTemp = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[0]];
         uint16_t nBaroPressure = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[2]];
         DLog(@"- Baro Svc: tempInC:0x%.4X, Pressure:0x%.4X", nBaroTemp, nBaroPressure);
@@ -582,11 +566,11 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
                 // Ta = ((c1 * Tr) / 2^24)
                 int64_t val = ((int64_t)(m_nC1 * Tr) * 100);
                 int64_t Ta = (val >> 24);
-                
+
                 // TA += (c2 / 2^10)
                 val = ((int64_t)m_nC2 * 100);
                 Ta += (val >> 10);
-                
+
                 self.baroTempInC = (double)Ta / 100.0;
             }
 
@@ -598,29 +582,29 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
             // Pa = (Sensitivity * Pr + Offset) / 2^14
             //
             uint16_t Pr = nBaroPressure;
-            
+
             // Sensitivity = C3
             int64_t nSensitivity = (int64_t)m_nC3;
-            
+
             // Sensitivity += ((c4 * Tr) / 2^17)
             int64_t val = (int64_t)m_nC4 * Tr;
             nSensitivity += (val >> 17);
-            
+
             // Sensitivity += ((c5 * Tr^2) / 2^34))
             val = (int64_t)m_nC5 * Tr * Tr;
             nSensitivity += (val >> 34);
-            
-            // Offset = (c6 * 2^14) 
+
+            // Offset = (c6 * 2^14)
             int64_t nOffset = (int64_t)m_nC6 << 14;
-            
+
             // Offset += ((c7 * Tr) / 2^3)
             val = (int64_t)m_nC7 * Tr;
             nOffset += (val >> 3);
-            
+
             // Offset += ((c8 * Tr^2) / 2^19)
             val = (int64_t)m_nC8 * Tr * Tr;
             nOffset += (val >> 19);
-            
+
             // Pressure (Pa) = (Sensitivity * Pr + Offset) / 2^14
             int64_t pres = ((int64_t)(nSensitivity * Pr) + nOffset) >> 14;
             self.baroPressure = (double)pres / 100.0;
@@ -634,7 +618,7 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
         //  [within Section entitled: "Accelerometer Sensor"]
         //
         const int kREQUIRED_DATA_LEN = 3;
-        NSAssert([dat length] == kREQUIRED_DATA_LEN, @"Incorrect data length [(%d)!=%d]!", [dat length], kREQUIRED_DATA_LEN);
+        NSAssert([dat length] == kREQUIRED_DATA_LEN, @"Incorrect data length [(%lu)!=%d]!", (unsigned long)[dat length], kREQUIRED_DATA_LEN);
 
         int8_t nValuesAr[kREQUIRED_DATA_LEN];
         [dat getBytes:&nValuesAr[0] length:kREQUIRED_DATA_LEN];
@@ -658,7 +642,7 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
         //  [within Section entitled: "Accelerometer Sensor"]
         //
         const int kREQUIRED_DATA_LEN = 1;
-        NSAssert([dat length] == kREQUIRED_DATA_LEN, @"Incorrect data length [(%d)!=%d]!", [dat length], kREQUIRED_DATA_LEN);
+        NSAssert([dat length] == kREQUIRED_DATA_LEN, @"Incorrect data length [(%lu)!=%d]!", (unsigned long)[dat length], kREQUIRED_DATA_LEN);
 
         uint8_t nValuesAr[kREQUIRED_DATA_LEN];
         [dat getBytes:&nValuesAr[0] length:kREQUIRED_DATA_LEN];
@@ -675,7 +659,7 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
         //  [within Section entitled: "Gyroscope Sensor"]
         //
         const int kREQUIRED_DATA_LEN = 6;
-        NSAssert([dat length] == kREQUIRED_DATA_LEN, @"Incorrect data length [(%d)!=%d]!", [dat length], kREQUIRED_DATA_LEN);
+        NSAssert([dat length] == kREQUIRED_DATA_LEN, @"Incorrect data length [(%lu)!=%d]!", (unsigned long)[dat length], kREQUIRED_DATA_LEN);
 
         uint8_t nValuesAr[kREQUIRED_DATA_LEN];
         [dat getBytes:&nValuesAr[0] length:kREQUIRED_DATA_LEN];
@@ -684,7 +668,7 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
         int16_t nGyroY = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[2]];
         int16_t nGyroZ = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[4]];
         DLog(@"- Gyro X(0x%.4X), Y(0x%.4X), Z(0x%.4X)", nGyroX, nGyroY, nGyroZ);
-        
+
         bool bSensorIsOff = YES;
         for (int nValueIdx=0; nValueIdx < kREQUIRED_DATA_LEN-1; nValueIdx++) {
             if(nValuesAr[nValueIdx] != 0)
@@ -713,7 +697,7 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
         //  [within Section entitled: "Magnetometer Sensor"]
         //
         const int kREQUIRED_DATA_LEN = 6;
-        NSAssert([dat length] == kREQUIRED_DATA_LEN, @"Incorrect data length [(%d)!=%d]!", [dat length], kREQUIRED_DATA_LEN);
+        NSAssert([dat length] == kREQUIRED_DATA_LEN, @"Incorrect data length [(%lu)!=%d]!", (unsigned long)[dat length], kREQUIRED_DATA_LEN);
 
         uint8_t nValuesAr[kREQUIRED_DATA_LEN];
         [dat getBytes:&nValuesAr[0] length:kREQUIRED_DATA_LEN];
@@ -743,7 +727,7 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
             self.magnetometerZ = (nMagnetoZ * 1.0) / (65536.0 / 2000.0);
         }
     }
-   else if([strArrivingChrstcUUID isEqualToString:kMAGNETO_PERI_CHRSTC])
+    else if([strArrivingChrstcUUID isEqualToString:kMAGNETO_PERI_CHRSTC])
     {
         // pull out period and post to property
         //
@@ -751,7 +735,7 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
         //  [within Section entitled: "Magnetometer Sensor"]
         //
         const int kREQUIRED_DATA_LEN = 1;
-        NSAssert([dat length] == kREQUIRED_DATA_LEN, @"Incorrect data length [(%d)!=%d]!", [dat length], kREQUIRED_DATA_LEN);
+        NSAssert([dat length] == kREQUIRED_DATA_LEN, @"Incorrect data length [(%lu)!=%d]!", (unsigned long)[dat length], kREQUIRED_DATA_LEN);
 
         uint8_t nValuesAr[kREQUIRED_DATA_LEN];
         [dat getBytes:&nValuesAr[0] length:kREQUIRED_DATA_LEN];
@@ -760,62 +744,86 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
         m_bIgnoreNextValueChange = YES;  // ignore ourself writing to this property
         self.magnetometerPeriod = nValuesAr[0];
     }
-   else if([strArrivingChrstcUUID isEqualToString:kBARO_CALI_CHRSTC])
-   {
-       // pull out 8 Calibration Values
-       //
-       // following built from:  http://processors.wiki.ti.com/index.php/SensorTag_User_Guide#Magnetometer
-       //  [within Section entitled: "Magnetometer Sensor"]
-       //
-       const int kREQUIRED_DATA_LEN = 16;
-       NSAssert([dat length] == kREQUIRED_DATA_LEN, @"Incorrect data length [(%d)!=%d]!", [dat length], kREQUIRED_DATA_LEN);
+    else if([strArrivingChrstcUUID isEqualToString:kBARO_CALI_CHRSTC])
+    {
+        // pull out 8 Calibration Values
+        //
+        // following built from:  http://processors.wiki.ti.com/index.php/SensorTag_User_Guide#Magnetometer
+        //  [within Section entitled: "Magnetometer Sensor"]
+        //
+        const int kREQUIRED_DATA_LEN = 16;
+        NSAssert([dat length] == kREQUIRED_DATA_LEN, @"Incorrect data length [(%lu)!=%d]!", (unsigned long)[dat length], kREQUIRED_DATA_LEN);
 
-       uint8_t nValuesAr[kREQUIRED_DATA_LEN];
-       [dat getBytes:&nValuesAr[0] length:kREQUIRED_DATA_LEN];
+        uint8_t nValuesAr[kREQUIRED_DATA_LEN];
+        [dat getBytes:&nValuesAr[0] length:kREQUIRED_DATA_LEN];
 
-       m_nC1 = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[0]];
-       m_nC2 = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[2]];
-       m_nC3 = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[4]];
-       m_nC4 = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[6]];
-       m_nC5 = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[8]];
-       m_nC6 = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[10]];
-       m_nC7 = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[12]];
-       m_nC8 = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[14]];
-       m_bHaveCalibrationData = YES;
+        m_nC1 = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[0]];
+        m_nC2 = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[2]];
+        m_nC3 = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[4]];
+        m_nC4 = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[6]];
+        m_nC5 = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[8]];
+        m_nC6 = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[10]];
+        m_nC7 = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[12]];
+        m_nC8 = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[14]];
+        m_bHaveCalibrationData = YES;
 
-       DLog(@"- loaded Calibration Coefficients");
-   }
+        DLog(@"- loaded Calibration Coefficients");
+    }
     else
     {
         DLog(@"*****  UNHANDLED arriving charicteristic: %@", strArrivingChrstcUUID);
     }
 
     // do we have a callBack registered for this characteristic
-    LEDCharacteristicValueUpdatedBlock callBack = [self.dctCallbacks objectForKey:strArrivingChrstcUUID];
-    if(callBack != nil)
+    NSArray *callbacksAr = [self callbacksForUUID:strArrivingChrstcUUID];
+    if(callbacksAr.count > 0)
     {
-        DLog(@"- Invoking Callback for: %@", strArrivingChrstcUUID);
-        
-        // remove the callback so we don't use it next time...
-        [self.dctCallbacks removeObjectForKey:strArrivingChrstcUUID];
-        
-        // handle callback form of notify (invoke the callback)
-        callBack(strArrivingChrstcUUID);
+        for (SensorTagCharacteristicValueUpdatedBlock callBack in callbacksAr) {
+            DLog(@"- Invoking Callback for: %@", strArrivingChrstcUUID);
+
+            // remove the callback so we don't use it next time...
+            //[self.dctCallbacks removeObjectForKey:arrivingChrstcUUID.UUIDString];   /// HUH!!!????
+
+            // handle callback form of notify (invoke the callback)
+            callBack(strArrivingChrstcUUID);
+        }
     }
     else
     {
         DLog(@"- Posting Notification for: %@", strArrivingChrstcUUID);
-        
+
         // handle notification center form of notify (post the notification)
         [[NSNotificationCenter defaultCenter] postNotificationName:kCHARACTERISTIC_VALUE_UPDATED object:strArrivingChrstcUUID];
     }
 }
+
+- (NSArray *)callbacksForUUID:(NSString *)UUIDString
+{
+    NSString *strKeySuffix = [self suffixKeyForUUID:UUIDString];
+    NSMutableArray *callbacksAr = [NSMutableArray array];
+    for (NSString *callbackKey in self.dctCallbacks.allKeys) {
+        if([callbackKey hasSuffix:strKeySuffix])
+        {
+            [callbacksAr addObject:[self.dctCallbacks objectForKey:callbackKey]];
+        }
+    }
+    return callbacksAr;
+}
+
+
 
 - (void)updateNotifyStateForCharacteristic:(NSNotification *)notification
 {
     NSAssert([notification.object isKindOfClass:[ISPPeripheralTriadParameter class]], @"ERROR this is NOT a ISPPeripheralTriadParameter?!  What broke???");
     ISPPeripheralTriadParameter *infoObject = notification.object;
     DLog(@"- triad=[%@]", infoObject);
+}
+
+- (void)handleDeviceConnected:(NSNotification *)notification
+{
+    DLog(@"");
+    self.deviceReady = YES; // let others see if we are connected...
+    [[NSNotificationCenter defaultCenter] postNotificationName:kDEVICE_IS_READY_FOR_ACCESS object:nil];
 }
 
 - (void)handleDevicesGone:(NSNotification *)notification
@@ -842,7 +850,7 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNOTIFICATION_ADD_BLE_DEVICE object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNOTIFICATION_DEVICE_SERVICES_DISCOVERED object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNOTIFICATION_DEVICE_CHARACTERISTICS_DISCOVERED object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNOTIFICATION_DEVICE_DISCOVERED_CHARACTERISTIC_DESCRIPTORS object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNOTIFICATION_DEVICE_CHARACTERISTIC_DESCRIPTORS_DISCOVERED object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNOTIFICATION_DEVICE_UPDATED_CHARACTERISTIC_VALUE object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNOTIFICATION_DEVICE_UPDATED_CHARACTERISTIC_NOTIF_STATE object:nil];
 }
@@ -854,114 +862,114 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
                        change:(NSDictionary *)change
                       context:(void *)context
 {
-	NSObject *newValue = [change objectForKey:NSKeyValueChangeNewKey];
-	DLog(@"** keypath=%@, value=%@", keyPath, newValue);    // here with PROPERTY value updates
+    NSObject *newValue = [change objectForKey:NSKeyValueChangeNewKey];
+    DLog(@"** keypath=%@, value=%@", keyPath, newValue);    // here with PROPERTY value updates
 
-	if(newValue != nil && !m_bIgnoreNextValueChange)
-	{
+    if(newValue != nil && !m_bIgnoreNextValueChange)
+    {
         // NOTE: one of these if's for each Writeable PROPERTY
         if([keyPath isEqualToString:kKeypathTempEnable])
-		{
+        {
             // build payload value
-           Byte nValue = (self.tempEnable) ? 1: 0;
+            Byte nValue = (self.tempEnable) ? 1: 0;
             NSData *dat = [NSData dataWithBytes:&nValue length:1];
             // write to characteristic of peripheral
             [self writeValue:dat forCharacteristicUUIDString:kIR_TEMP_CONF_CHRSTC];
-		}
+        }
         else if([keyPath isEqualToString:kKeypathTempNotify])
-		{
+        {
             // write Notify value to characteristic of peripheral
             [self setNotifyValue:self.isTempNotifying forCharacteristicUUIDString:kIR_TEMP_DATA_CHRSTC];
-		}
+        }
         else if([keyPath isEqualToString:kKeypathHumidityEnable])
-		{
+        {
             // build payload value
             Byte nValue = (self.isHumidityEnabled) ? 1: 0;
             NSData *dat = [NSData dataWithBytes:&nValue length:1];
             // write to characteristic of peripheral
             [self writeValue:dat forCharacteristicUUIDString:kHUMID_CONF_CHRSTC];
-		}
+        }
         else if([keyPath isEqualToString:kKeypathHumidityNotify])
-		{
+        {
             // write Notify value to characteristic of peripheral
             [self setNotifyValue:self.isHumidityNotifying forCharacteristicUUIDString:kHUMID_DATA_CHRSTC];
-		}
+        }
         else if([keyPath isEqualToString:kKeypathBarometerEnable])
-		{
+        {
             // build payload value
             Byte nValue = (self.isBarometerEnabled) ? 1: 0;
             NSData *dat = [NSData dataWithBytes:&nValue length:1];
             // write to characteristic of peripheral
-           [self writeValue:dat forCharacteristicUUIDString:kBARO_CONF_CHRSTC];
-		}
+            [self writeValue:dat forCharacteristicUUIDString:kBARO_CONF_CHRSTC];
+        }
         else if([keyPath isEqualToString:kKeypathBarometerNotify])
-		{
+        {
             // write Notify value to characteristic of peripheral
             [self setNotifyValue:self.isBarometerNotifying forCharacteristicUUIDString:kBARO_DATA_CHRSTC];
-		}
+        }
         else if([keyPath isEqualToString:kKeypathBarometerCalibrate])
-		{
+        {
             // build payload value
             Byte nValue = (self.isBarometerCalibrated) ? 0x02: 0x00;
             NSData *dat = [NSData dataWithBytes:&nValue length:1];
             // write to characteristic of peripheral
             [self writeValue:dat forCharacteristicUUIDString:kBARO_CONF_CHRSTC];
-		}
+        }
         else if([keyPath isEqualToString:kKeypathAccelerometerNotify])
-		{
+        {
             // write Notify value to characteristic of peripheral
             [self setNotifyValue:self.isAccelerometerNotifying forCharacteristicUUIDString:kACCEL_DATA_CHRSTC];
-		}
+        }
         else if([keyPath isEqualToString:kKeypathAccelerometerEnable])
-		{
+        {
             // build payload value
             Byte nValue = (self.isAccelerometerEnabled) ? 1: 0;
             NSData *dat = [NSData dataWithBytes:&nValue length:1];
             // write to characteristic of peripheral
             [self writeValue:dat forCharacteristicUUIDString:kACCEL_CONF_CHRSTC];
-		}
+        }
         else if([keyPath isEqualToString:kKeypathAccelerometerPeriod])
-		{
+        {
             // build payload value
             Byte nValue = self.accelerometerPeriod;
             NSData *dat = [NSData dataWithBytes:&nValue length:1];
             // write to characteristic of peripheral
             [self writeValue:dat forCharacteristicUUIDString:kACCEL_PERI_CHRSTC];
-		}
+        }
         else if([keyPath isEqualToString:kKeypathGyroscopeNotify])
-		{
+        {
             // write Notify value to characteristic of peripheral
-           [self setNotifyValue:self.isGyroscopeNotifying forCharacteristicUUIDString:kGYRO_DATA_CHRSTC];
-		}
+            [self setNotifyValue:self.isGyroscopeNotifying forCharacteristicUUIDString:kGYRO_DATA_CHRSTC];
+        }
         else if([keyPath isEqualToString:kKeypathGyroscopeEnable])
-		{
+        {
             // build payload value
             Byte nValue = (self.isGyroscopeEnabled) ? 1: 0;
             NSData *dat = [NSData dataWithBytes:&nValue length:1];
             // write to characteristic of peripheral
             [self writeValue:dat forCharacteristicUUIDString:kGYRO_CONF_CHRSTC];
-		}
+        }
         else if([keyPath isEqualToString:kKeypathMagnetometerNotify])
-		{
+        {
             // write Notify value to characteristic of peripheral
             [self setNotifyValue:self.isMagnetometerNotifying forCharacteristicUUIDString:kMAGNETO_DATA_CHRSTC];
-		}
+        }
         else if([keyPath isEqualToString:kKeypathMagnetometerEnable])
-		{
+        {
             // build payload value
             Byte nValue = (self.isMagnetometerEnabled) ? 1: 0;
             NSData *dat = [NSData dataWithBytes:&nValue length:1];
             // write to characteristic of peripheral
             [self writeValue:dat forCharacteristicUUIDString:kMAGNETO_CONF_CHRSTC];
-		}
+        }
         else if([keyPath isEqualToString:kKeypathMagnetometerPeriod])
-		{
+        {
             // build payload value
             Byte nValue = self.magnetometerPeriod;
             NSData *dat = [NSData dataWithBytes:&nValue length:1];
             // write to characteristic of peripheral
             [self writeValue:dat forCharacteristicUUIDString:kMAGNETO_PERI_CHRSTC];
-		}
+        }
         else
         {
             // not this derived class, pass on to base
@@ -970,7 +978,7 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
                                    change:change
                                   context:context];
         }
-	}
+    }
     if(m_bIgnoreNextValueChange)
     {
         DLog(@"- Ignored and clearing ignore");

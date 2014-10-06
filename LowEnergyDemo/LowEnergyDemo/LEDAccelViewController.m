@@ -5,6 +5,7 @@
 //  Created by Stephen M Moraco on 04/18/13.
 //  Copyright (c) 2013 Iron Sheep Productions, LLC. All rights reserved.
 //
+#import <CoreBluetooth/CoreBluetooth.h>
 
 #import "LEDAccelViewController.h"
 #import "LEDTISensorTag.h"
@@ -21,7 +22,7 @@
 @property (weak, nonatomic) LEDTISensorTag *sensorTag;
 @property (strong, nonatomic) NSArray *cbpPeripheralsFound;
 
-#pragma mark --> IBOutlet Properties (handles to UI objects in view)
+#pragma mark ---- IBOutlet Properties (handles to UI objects in view)
 
 @property (weak, nonatomic) IBOutlet UILabel *lblDeviceName;
 
@@ -44,7 +45,16 @@
 @property (weak, nonatomic) IBOutlet UITextField *tfMagPeriod;
 @property (weak, nonatomic) IBOutlet UIStepper *stpMagPeriod;
 
-#pragma mark --> IBAction Methods (Methods responding to user interaction)
+#pragma mark --> PRIVATE (Utility) Methods
+
+-(void)enableUI:(BOOL)enable;
+
+#pragma mark ---- NSNotificationCenter Callback Methods
+
+- (void)deviceReady:(NSNotification *)notification;
+- (void)valueUpdated:(NSNotification *)notification;
+
+#pragma mark ---- IBAction Methods (Methods responding to user interaction)
 
 - (IBAction)OnAccelSwValueChanged:(UISwitch *)sender;
 - (IBAction)OnPeriodTouchUp:(UIStepper *)sender;
@@ -54,14 +64,6 @@
 - (IBAction)OnMagPeriodTouchUp:(UIStepper *)sender;
 - (IBAction)OnMagPeriodValueChanged:(UIStepper *)sender;
 
-#pragma mark --> PRIVATE (Utility) Methods
-
--(void)enableUI:(BOOL)enable;
-
-#pragma mark ---> PRIVATE NSNotificationCenter Callback Methods
-
-- (void)deviceReady:(NSNotification *)notification;
-- (void)valueUpdated:(NSNotification *)notification;
 
 @end
 
@@ -72,10 +74,29 @@
     
 }
 
-#pragma mark --> View Override Methods
+//#pragma mark --> PUBLIC Property Synthesis Overrides
+
+//#pragma mark --> PRIVATE Property Synthesis Overrides
+
+//#pragma mark --> CLASS (Static) Methods
+
+//#pragma mark --> PUBLIC Property Overrides
+
+#pragma mark --> PUBLIC Instance Methods
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (self) {
+        // Custom initialization
+        DLog(@"");
+    }
+    return self;
+}
 
 - (void)viewDidLoad
 {
+    DLog(@"");
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
 
@@ -87,12 +108,7 @@
     DLog(@"");
     [super viewWillAppear:animated];
 
-    // register notification handlers
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(discoverBLEDevicesEnded:) name:kPERIPHERAL_SCAN_ENDED_NOTIFICATION object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceNoLongerReady:) name:kDEVICE_IS_NO_LONGER_READY object:nil];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(valueUpdated:) name:kCHARACTERISTIC_VALUE_UPDATED object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceReady:) name:kDEVICE_IS_READY_FOR_ACCESS object:nil];
 
     [self enableUI:NO];
 
@@ -118,8 +134,19 @@
     self.sensorTag.gyroscopeNotify = NO;
     self.sensorTag.magnetometerNotify = NO;
 
-    // unregister observation handlers
+    [self.sensorTag removeBlocksForViewController:self];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if([[segue identifier] isEqualToString:@"selectDevice"]) {
+        UINavigationController *navCtrller = (UINavigationController *)segue.destinationViewController;
+        LEDDevicePicker *chooser = (LEDDevicePicker *)[navCtrller.viewControllers objectAtIndex:0];
+        chooser.foundDevices = self.cbpPeripheralsFound;
+        chooser.delegate = self;
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -127,7 +154,6 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
 
 #pragma mark --> PRIVATE (Utility) Methods
 
@@ -143,7 +169,7 @@
 }
 
 
-#pragma mark --> IBAction Methods (Methods responding to user interaction)
+#pragma mark --> PRIVATE IBAction Methods (Methods responding to user interaction)
 
 - (IBAction)OnAccelSwValueChanged:(UISwitch *)sender
 {
@@ -220,7 +246,7 @@
     }
 }
 
-#pragma mark --> NSNotificationCenter Callback Methods
+#pragma mark --> PRIVATE NSNotificationCenter Callback Methods
 
 - (void)discoverBLEDevicesEnded:(NSNotification *)notification
 {
@@ -321,6 +347,23 @@
         // interpret the stepper value to our read-only display
         [self OnMagPeriodValueChanged:self.stpMagPeriod];
     }
+}
+
+
+#pragma mark PROTOCOL <LEDDevicePickerDelegate> Methods
+
+- (void)chooser:(UITableViewController *)chooser didCancel:(BOOL)didCancel
+{
+    DLog(@"- didCancel=%d", didCancel);
+    [chooser dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)chooser:(UITableViewController *)chooser selectedDeviceIndex:(NSUInteger)index
+{
+    DLog(@"- index=%lu", (unsigned long)index);
+    CBPeripheral *selectedDevice = [self.cbpPeripheralsFound objectAtIndex:index];
+    self.lblDeviceName.text = selectedDevice.name;
+    [self.sensorTag selectTag:selectedDevice];
 }
 
 

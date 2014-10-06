@@ -6,17 +6,16 @@
 //  Copyright (c) 2013 Iron Sheep Productions, LLC. All rights reserved.
 //
 
-
 #import <UIKit/UIKit.h>
 
 #import "CBPeripheral+Methods.h"
 #import "objc/runtime.h"
 
-#pragma mark CATEGORY CBPeripheral(Methods) Implementation
+#pragma mark - CATEGORY CBPeripheral(Methods) Implementation
 
 @implementation CBPeripheral (Methods)
 
-#pragma mark --> PUBLIC Property Setters/Getters
+#pragma mark -- Property Setters/Getters
 
 // See: http://ddeville.me/2011/03/add-variables-to-an-existing-class-in-objective-c/
 static char latestRSSIKey;
@@ -31,7 +30,22 @@ static char latestRSSIKey;
     return objc_getAssociatedObject(self, &latestRSSIKey) ;
 }
 
--(NSString *)UUIDstr
+- (BOOL)inConnectedState
+{
+    // with iOS7 how we checn connected changed... this method unifies the ways we do this into one...
+    BOOL bIsConnectedStatus = NO;
+    if(self.isIos7)
+    {
+        bIsConnectedStatus = (self.state == CBPeripheralStateConnected) ? YES : NO;
+    }
+    else
+    {
+        bIsConnectedStatus = self.isConnected;
+    }
+    return bIsConnectedStatus;
+}
+
+-(NSString *)UUIDString
 {
     // from  http://ios-dev-blog.com/generate-unique-identifier/#more-369
 
@@ -47,7 +61,7 @@ static char latestRSSIKey;
     //	CFStringRef string = CFUUIDCreateString(NULL, self.identifier);
     //	return (NSString *)CFBridgingRelease(string);
 
-    DLog(@"- self=[%@]", self);
+    //    DLog(@"- self=[%@]", self);
     if(self.isIos7)
     {
         NSUUID *cbpUUID = self.identifier;
@@ -95,12 +109,10 @@ static char latestRSSIKey;
 
 -(NSString *)title
 {
-    NSString *strYN = (self.isConnected) ? @"YES": @"no";
-    NSString *strTitle = [NSString stringWithFormat:@"%@:\n %@\n IsConnected=%@", self.name, self.UUIDstr, strYN];
+    NSString *strYN = (self.inConnectedState) ? @"YES": @"no";
+    NSString *strTitle = [NSString stringWithFormat:@"%@:\n UUID=0x%@\n IsConnected=%@", self.name, self.UUIDString, strYN];
     return strTitle;
 }
-
-#pragma mark --> PRIVATE (Utility) Methods
 
 - (BOOL)isIos7
 {
@@ -124,6 +136,15 @@ static char latestRSSIKey;
 	return s_bIsiOS7;
 }
 
+- (NSString *)description
+{
+    NSString *strDescription = [NSString stringWithFormat:@"<%@ 0x%.8x> [UUID=(0x%@) name=(%@)]",
+                                NSStringFromClass([self class]),
+                                (unsigned int)self,
+                                self.UUIDString,
+                                self.name];
+    return strDescription;
+}
 
 
 @end

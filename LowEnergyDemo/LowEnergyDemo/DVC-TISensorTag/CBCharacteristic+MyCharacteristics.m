@@ -114,10 +114,10 @@
                               nil]
                              ];
     }
-    NSString *strFriendlyName = [s_dctCharacteristicNames valueForKey:self.UUID.str];
+    NSString *strFriendlyName = [s_dctCharacteristicNames valueForKey:self.UUID.UUIDString];
     if(strFriendlyName == nil)
     {
-        strFriendlyName = self.UUID.str;
+        strFriendlyName = self.UUID.UUIDString;
     }
     return strFriendlyName;
 }

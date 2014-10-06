@@ -10,29 +10,29 @@
 	<string>LowEnergyDemo</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>CA49308E-5917-46F2-8014-6520E3EE67BB</key>
+		<key>88D605050F9945DCC1183D79F9B9D7A3602807B2</key>
 		<string>https://github.com/ironsheep/ISPLowEnergyManager.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>LowEnergyDemo/LowEnergyDemo.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>CA49308E-5917-46F2-8014-6520E3EE67BB</key>
+		<key>88D605050F9945DCC1183D79F9B9D7A3602807B2</key>
 		<string>../../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/ironsheep/ISPLowEnergyManager.git</string>
 	<key>IDESourceControlProjectVersion</key>
-	<integer>110</integer>
+	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>CA49308E-5917-46F2-8014-6520E3EE67BB</string>
+	<string>88D605050F9945DCC1183D79F9B9D7A3602807B2</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>CA49308E-5917-46F2-8014-6520E3EE67BB</string>
+			<string>88D605050F9945DCC1183D79F9B9D7A3602807B2</string>
 			<key>IDESourceControlWCCName</key>
 			<string>ISPLowEnergyManager</string>
 		</dict>

@@ -10,6 +10,8 @@
 
 @interface CBUUID (Methods)
 
-@property (weak, nonatomic, readonly) NSString *str;
+@property (weak, nonatomic, readonly) NSString *UUIDString;
+
+- (NSString *)description;
 
 @end

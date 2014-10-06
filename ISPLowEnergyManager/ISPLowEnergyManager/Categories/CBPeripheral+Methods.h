@@ -8,16 +8,16 @@
 
 #import <CoreBluetooth/CoreBluetooth.h>
 
-#pragma mark CATEGORY CBPeripheral(Methods) Interface
+#pragma mark CATEGORY CBPeripheral PRIVATE Interface
 
 @interface CBPeripheral (Methods)
 
-
-#pragma mark --> PUBLIC PROPERTIES
-
 @property (strong, nonatomic) NSNumber *latestRSSI;
+@property (assign, nonatomic, readonly) BOOL inConnectedState;
 
-@property (weak, nonatomic, readonly) NSString *UUIDstr;
+@property (weak, nonatomic, readonly) NSString *UUIDString;
 @property (weak, nonatomic, readonly) NSString *title;
+
+- (NSString *)description;
 
 @end

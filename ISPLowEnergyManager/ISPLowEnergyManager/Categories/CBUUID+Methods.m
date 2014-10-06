@@ -10,7 +10,7 @@
 
 @implementation CBUUID (Methods)
 
--(NSString *)str
+-(NSString *)UUIDString
 {
     // from  http://stackoverflow.com/questions/13275859/how-to-turn-cbuuid-into-string
 
@@ -26,5 +26,15 @@
         return [nsuuid UUIDString];
     }
 }
+
+- (NSString *)description
+{
+    NSString *strDescription = [NSString stringWithFormat:@"<%@ 0x%.8x> [UUID=(0x%@)]",
+                                NSStringFromClass([self class]),
+                                (unsigned int)self,
+                                self.UUIDString];
+    return strDescription;
+}
+
 
 @end

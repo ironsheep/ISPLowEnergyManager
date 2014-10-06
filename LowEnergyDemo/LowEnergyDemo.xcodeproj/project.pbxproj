@@ -32,6 +32,8 @@
 		DC42947919A7EEEC00763CF3 /* libISPLowEnergyManager.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DC42947419A7EE9700763CF3 /* libISPLowEnergyManager.a */; };
 		DC78EB3F19A8313A003417C7 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = DC78EB3E19A8313A003417C7 /* MBProgressHUD.m */; };
 		DC78EB4219A8403A003417C7 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = DC78EB4119A8403A003417C7 /* README.md */; };
+		DCF1FCB419DF2A0000BC038C /* LEDViewControllerBase.m in Sources */ = {isa = PBXBuildFile; fileRef = DCF1FCB319DF2A0000BC038C /* LEDViewControllerBase.m */; };
+		DCF1FCB719DF39DD00BC038C /* LEDDevicePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = DCF1FCB619DF39DD00BC038C /* LEDDevicePicker.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -105,6 +107,10 @@
 		DC78EB3D19A8313A003417C7 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
 		DC78EB3E19A8313A003417C7 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
 		DC78EB4119A8403A003417C7 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		DCF1FCB219DF2A0000BC038C /* LEDViewControllerBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LEDViewControllerBase.h; sourceTree = "<group>"; };
+		DCF1FCB319DF2A0000BC038C /* LEDViewControllerBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LEDViewControllerBase.m; sourceTree = "<group>"; };
+		DCF1FCB519DF39DD00BC038C /* LEDDevicePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEDDevicePicker.h; path = Pickers/LEDDevicePicker.h; sourceTree = "<group>"; };
+		DCF1FCB619DF39DD00BC038C /* LEDDevicePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LEDDevicePicker.m; path = Pickers/LEDDevicePicker.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -167,16 +173,9 @@
 		DC42942119A7EC5B00763CF3 /* LowEnergyDemo */ = {
 			isa = PBXGroup;
 			children = (
+				DCF1FCB119DF265200BC038C /* AppDelegate */,
+				DCF1FCB019DF263D00BC038C /* ViewControllers */,
 				DC42945619A7ECE800763CF3 /* DVC-TISensorTag */,
-				DC42943919A7EC5B00763CF3 /* Images.xcassets */,
-				DC0ECA9419A88EAC00BB1F11 /* LEDAboutViewController.h */,
-				DC0ECA9519A88EAC00BB1F11 /* LEDAboutViewController.m */,
-				DC42946219A7ECE800763CF3 /* LEDAccelViewController.h */,
-				DC42946319A7ECE800763CF3 /* LEDAccelViewController.m */,
-				DC42942A19A7EC5B00763CF3 /* LEDAppDelegate.h */,
-				DC42942B19A7EC5B00763CF3 /* LEDAppDelegate.m */,
-				DC42946419A7ECE900763CF3 /* LEDTempsViewController.h */,
-				DC42946519A7ECE900763CF3 /* LEDTempsViewController.m */,
 				DC42946D19A7ECF800763CF3 /* Storyboard */,
 				DC42942219A7EC5B00763CF3 /* Supporting Files */,
 			);
@@ -186,6 +185,7 @@
 		DC42942219A7EC5B00763CF3 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				DC42943919A7EC5B00763CF3 /* Images.xcassets */,
 				DC78EB3B19A8313A003417C7 /* External */,
 				DC42942319A7EC5B00763CF3 /* LowEnergyDemo-Info.plist */,
 				DC42942419A7EC5B00763CF3 /* InfoPlist.strings */,
@@ -272,6 +272,40 @@
 				DC78EB4119A8403A003417C7 /* README.md */,
 			);
 			name = Docs;
+			sourceTree = "<group>";
+		};
+		DCF1FCB019DF263D00BC038C /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				DC0ECA9419A88EAC00BB1F11 /* LEDAboutViewController.h */,
+				DC0ECA9519A88EAC00BB1F11 /* LEDAboutViewController.m */,
+				DC42946219A7ECE800763CF3 /* LEDAccelViewController.h */,
+				DC42946319A7ECE800763CF3 /* LEDAccelViewController.m */,
+				DC42946419A7ECE900763CF3 /* LEDTempsViewController.h */,
+				DC42946519A7ECE900763CF3 /* LEDTempsViewController.m */,
+				DCF1FCB219DF2A0000BC038C /* LEDViewControllerBase.h */,
+				DCF1FCB319DF2A0000BC038C /* LEDViewControllerBase.m */,
+				DCF1FCB819DF39E400BC038C /* Pickers */,
+			);
+			name = ViewControllers;
+			sourceTree = "<group>";
+		};
+		DCF1FCB119DF265200BC038C /* AppDelegate */ = {
+			isa = PBXGroup;
+			children = (
+				DC42942A19A7EC5B00763CF3 /* LEDAppDelegate.h */,
+				DC42942B19A7EC5B00763CF3 /* LEDAppDelegate.m */,
+			);
+			name = AppDelegate;
+			sourceTree = "<group>";
+		};
+		DCF1FCB819DF39E400BC038C /* Pickers */ = {
+			isa = PBXGroup;
+			children = (
+				DCF1FCB519DF39DD00BC038C /* LEDDevicePicker.h */,
+				DCF1FCB619DF39DD00BC038C /* LEDDevicePicker.m */,
+			);
+			name = Pickers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -407,6 +441,8 @@
 				DC42946A19A7ECE900763CF3 /* LEDTISensorTag.m in Sources */,
 				DC42946619A7ECE900763CF3 /* CBCharacteristic+MyCharacteristics.m in Sources */,
 				DC78EB3F19A8313A003417C7 /* MBProgressHUD.m in Sources */,
+				DCF1FCB719DF39DD00BC038C /* LEDDevicePicker.m in Sources */,
+				DCF1FCB419DF2A0000BC038C /* LEDViewControllerBase.m in Sources */,
 				DC42946C19A7ECE900763CF3 /* LEDTempsViewController.m in Sources */,
 				DC42946B19A7ECE900763CF3 /* LEDAccelViewController.m in Sources */,
 			);

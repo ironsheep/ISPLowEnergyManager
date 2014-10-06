@@ -1,6 +1,6 @@
 //
 //  LEMCBUUIDParameter.h
-//  KZ0Q-LEDPanel
+//  ISPLowEnergyManager
 //
 //  Created by Stephen M Moraco on 03/07/14.
 //  Copyright (c) 2014 Iron Sheep Productions, LLC. All rights reserved.
