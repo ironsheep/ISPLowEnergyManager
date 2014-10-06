@@ -18,6 +18,10 @@
 
 -   Demo App: converted Temp View Controller to use new "blocks" form of communication with SensorTag object
 
+-   Demo App: added (try again) option to No Sensor Tag devices found dialog
+
+-   Demo App: Hrmf... need to fix bug in Obj Temp Calcs...!!!
+
 **— Update: 2014 Aug 23: 04:22L**
 
 -   Added About Tab
