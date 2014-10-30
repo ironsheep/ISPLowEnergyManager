@@ -73,7 +73,7 @@ Code in this Repostory is Copyright 2014 ©, Iron Sheep Productions, LLC,
 except for the two external components found herein which belong to
 their respective owners:
 
-1:MDProgressHUD:Version 0.4 - Created by Matej Bukovinski on 2.4.09.
+1:MBProgressHUD:Version 0.4 - Created by Matej Bukovinski on 2.4.09.
 [MBProgressHUD at github][]
 
 2:CustomAlert:Created by Aaron Crabtree on 10/14/11 - Copyright (c) 2011
