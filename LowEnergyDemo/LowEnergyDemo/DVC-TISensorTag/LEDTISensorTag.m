@@ -438,7 +438,7 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
     ISPPeripheralTriadParameter *infoObject = notification.object;
     if(infoObject.error != nil)
     {
-        DLog(@"-- !!! ERROR(%d) %@", infoObject.error.code, infoObject.error.localizedDescription);
+        DLog(@"-- !!! ERROR(%ld) %@", (long)infoObject.error.code, infoObject.error.localizedDescription);
     }
 
     NSString *strArrivingChrstcUUID = infoObject.characteristic.UUID.UUIDString;

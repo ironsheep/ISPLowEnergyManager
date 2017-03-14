@@ -9,8 +9,6 @@
 #import "ISPLowEnergyManager.h"
 #import "CBPeripheral+Methods.h"
 #import "CBService+Methods.h"
-//#import "CBService+MyServices.h"
-//#import "CBCharacteristic+MyCharacteristics.h"
 #import "ISPPeripheralTriadParameter.h"
 #import "CustomAlertView.h"
 #import "ISPNotificationConsts.h"
@@ -35,7 +33,7 @@ typedef enum _ePeripheralQueryState : NSInteger {
     BOOL m_bIsDeviceScanEnabled;
     BOOL m_bIsDeviceScanActive;
     BOOL m_bIsServicesDiscoveryEnabled;
-    CBCentralManagerState m_cmsPreviousState;
+    CBManagerState m_cmsPreviousState;
  }
 
 
@@ -451,15 +449,7 @@ const NSUInteger knDefaultNumberOfDevicesToLocate = 1;  // connect with the firs
 
 - (NSNumber *)rssiForPeripheral:(CBPeripheral*)peripheral
 {
-    NSNumber *nuLatestRSSI = nil;
-    if(peripheral.RSSI == nil)
-    {
-        nuLatestRSSI = peripheral.latestRSSI;
-    }
-    else
-    {
-        nuLatestRSSI = peripheral.RSSI;
-    }
+    NSNumber *nuLatestRSSI = peripheral.latestRSSI;
     DLog(@"- [%@]", nuLatestRSSI);
     return nuLatestRSSI;
 }
@@ -733,9 +723,9 @@ const NSUInteger knDefaultNumberOfDevicesToLocate = 1;  // connect with the firs
 {
     self.engineState = PQS_IDLE;
 
-    DLog(@"  -- IDLE!  service load Q=[%d]", self.dctNeedServiceLoadsByServiceUUIDs.count);
-    DLog(@"  --        chrstc load Q=[%d]", self.dctNeedCharacteristicLoadsByServiceUUIDs.count);
-    DLog(@"  --        dscrptr load Q=[%d]", self.dctNeedDescriptorLoadsByCharacteristicUUIDs.count);
+    DLog(@"  -- IDLE!  service load Q=[%lu]", (unsigned long)self.dctNeedServiceLoadsByServiceUUIDs.count);
+    DLog(@"  --        chrstc load Q=[%lu]", (unsigned long)self.dctNeedCharacteristicLoadsByServiceUUIDs.count);
+    DLog(@"  --        dscrptr load Q=[%lu]", (unsigned long)self.dctNeedDescriptorLoadsByCharacteristicUUIDs.count);
     DLog(@"  --        pending ops-q=[%@]", self.dctPendingOperationsByCharacteristicUUID);
     [self checkPendingWork];
 }
@@ -1066,13 +1056,13 @@ const NSUInteger knDefaultNumberOfDevicesToLocate = 1;  // connect with the firs
 
 #pragma mark - PROTOCOL <CBCentralManagerDelegate> Methods
 
-const CBCentralManagerState kcmsNeverSetState = (CBCentralManagerState)-1;
+const CBManagerState kcmsNeverSetState = (CBManagerState)-1;
 
 - (void)centralManagerDidUpdateState:(CBCentralManager *)central
 {
 
     // read once so we don't accidentally incorporate a state-change
-    CBCentralManagerState cmsNewState = [central state];
+    CBManagerState cmsNewState = [central state];
 
     switch (cmsNewState) {
         case CBCentralManagerStatePoweredOff:
@@ -1248,6 +1238,22 @@ const CBCentralManagerState kcmsNeverSetState = (CBCentralManagerState)-1;
     ISPPeripheralTriadParameter *infoObject = [[ISPPeripheralTriadParameter alloc] initWithPeripheral:peripheral parameter:nil error:error];
     [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_DEVICE_UPDATED_RSSI object:infoObject];
     DLog(@"- EXIT");
+}
+
+- (void)peripheral:(CBPeripheral *)peripheral didReadRSSI:(NSNumber *)RSSI error:(NSError *)error
+{
+#ifdef DEBUG
+    NSString *strErrorInd = [self descriptionOfError:error];
+#endif
+    DLog(@"- RX UUID=0x%@ %@", peripheral.UUIDString, strErrorInd);
+
+    // save our latest RSSI then do notify
+    peripheral.latestRSSI = RSSI;
+
+    ISPPeripheralTriadParameter *infoObject = [[ISPPeripheralTriadParameter alloc] initWithPeripheral:peripheral parameter:nil error:error];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_DEVICE_UPDATED_RSSI object:infoObject];
+    DLog(@"- EXIT");
+
 }
 
 - (void)foundSearchSvcUUID:(NSString *)svcUUIDString

@@ -33,15 +33,7 @@ static char latestRSSIKey;
 - (BOOL)inConnectedState
 {
     // with iOS7 how we checn connected changed... this method unifies the ways we do this into one...
-    BOOL bIsConnectedStatus = NO;
-    if(self.isIos7)
-    {
-        bIsConnectedStatus = (self.state == CBPeripheralStateConnected) ? YES : NO;
-    }
-    else
-    {
-        bIsConnectedStatus = self.isConnected;
-    }
+    BOOL bIsConnectedStatus = (self.state == CBPeripheralStateConnected) ? YES : NO;
     return bIsConnectedStatus;
 }
 
