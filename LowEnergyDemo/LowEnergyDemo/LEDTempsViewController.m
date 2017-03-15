@@ -140,7 +140,7 @@
 
     if(!self.HUD.isHidden)
     {
-        [self.HUD hide:YES];
+        [self.HUD hideAnimated:YES];
     }
 }
 
@@ -212,7 +212,7 @@
 
     if(!self.HUD.isHidden)
     {
-        [self.HUD hide:YES];
+        [self.HUD hideAnimated:YES];
     }
 
     self.sensorTag.barometerCalibrate = YES;
@@ -272,7 +272,7 @@
 - (void)showHuntingForSensorTags
 {
     self.HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    self.HUD.labelText = @"Looking for TI Sensor Tags";
+    self.HUD.label.text = @"Looking for TI Sensor Tags";
 }
 
 
@@ -287,7 +287,7 @@
         // we ended without finding any objects!
         if(!self.HUD.isHidden)
         {
-            [self.HUD hide:YES];
+            [self.HUD hideAnimated:YES];
         }
 
         UIAlertView *avAlert = [[UIAlertView alloc] initWithTitle:@"BTLE Demo: Alert" message:@"No TI Sensor Tag devices found!" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles: @"Try Again", nil];

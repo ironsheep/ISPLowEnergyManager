@@ -177,8 +177,8 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
                                        nil];
 
         self.progressHUD = [[MBProgressHUD alloc] init];
-        self.progressHUD.labelText = @"SCANNING";
-        self.progressHUD.detailsLabelText = @"Looking for TI devices";
+        self.progressHUD.label.text = @"SCANNING";
+        self.progressHUD.detailsLabel.text = @"Looking for TI devices";
 
         // if want TI Sensor Tag object:
         self.btLEManager.searchUUID = nil; //kGENERIC_ACCESS_SVC;  //kIR_TEMPERATURE_SVC;
@@ -353,7 +353,7 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
 {
     DLog(@" - notification=[%@]", notification);
     //[self showScanIndicator];
-    [self.progressHUD show:YES];
+    [self.progressHUD showAnimated:YES];
 
 }
 
@@ -379,7 +379,7 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
 {
     DLog(@" - notification=[%@]", notification);
     //[self hideScanIndicator];
-    [self.progressHUD hide:YES];
+    [self.progressHUD hideAnimated:YES];
 
     NSAssert([notification.object isKindOfClass:[NSArray class]], @"ERROR this is NOT a NSArray?!  What broke???");
 
