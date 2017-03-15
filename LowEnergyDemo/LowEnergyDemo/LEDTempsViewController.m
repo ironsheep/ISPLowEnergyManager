@@ -64,6 +64,8 @@
 
 }
 
+@dynamic sensorTag;
+
 //#pragma mark --> PUBLIC Property Synthesis Overrides
 
 //#pragma mark --> PRIVATE Property Synthesis Overrides

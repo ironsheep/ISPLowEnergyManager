@@ -12,6 +12,12 @@
 
 ### Changelog
 
+**— Update: 2017 Mar: (in-progress) **
+
+-   LowEnergyManager: Update to latest 
+
+-   Demo App: add App Icons for new devices
+
 **— Update: 2014 Oct 05: 20:29L**
 
 -   LowEnergyManager: Added Alternate form of device discovery with deferred operation scheduling
