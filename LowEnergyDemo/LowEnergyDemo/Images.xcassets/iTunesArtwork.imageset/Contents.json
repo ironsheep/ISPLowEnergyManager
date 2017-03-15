@@ -2,12 +2,12 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "3axis.png",
+      "filename" : "iTunesArtwork.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "3axis@2x.png",
+      "filename" : "iTunesArtwork@2x.png",
       "scale" : "2x"
     },
     {
