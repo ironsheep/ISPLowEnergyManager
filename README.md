@@ -12,7 +12,7 @@
 
 ### Changelog
 
-**— Update: 2017 Mar: (in-progress) **
+**— Update: 2017 Mar: (in-progress)**
 
 -   LowEnergyManager: Update to latest 
 
