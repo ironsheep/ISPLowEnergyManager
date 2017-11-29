@@ -17,6 +17,7 @@
 - Update to latest Xcode 9.1 SDKs
 - Address compiler warnings.
 - Validate and fix project compilation settings.
+- add missing (now needed?) 1024x1024 appIcon
 
 -   **LowEnergyManager**:
 - Update to latest CoreBluetooth API
@@ -24,6 +25,7 @@
 -   **Demo App**:
 -   Repair Various readings due to sign conversion mistakes
 -   Turned on Y and Z gyros (was only turning on X)
+-   Adjust Accel. value scaling... appears that our device is using +/-8g device (+/- 2g device)
 -   Fix various Storyboard / layout problems...
 -   Add project background mode indicating need for BTLE accessory use
 
