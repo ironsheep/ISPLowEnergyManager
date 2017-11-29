@@ -226,7 +226,7 @@ const NSUInteger knDefaultNumberOfDevicesToLocate = 1;  // connect with the firs
 
     if(m_bIsDeviceScanEnabled)
     {
-        if(m_cmsPreviousState == CBCentralManagerStatePoweredOn) {
+        if(m_cmsPreviousState == CBManagerStatePoweredOn) {
             // we're powered-on, start looking for devices...
             DLog(@"*** Request SCAN")
             [self startScanningForUUIDString:self.searchUUID];
@@ -1065,9 +1065,9 @@ const CBManagerState kcmsNeverSetState = (CBManagerState)-1;
     CBManagerState cmsNewState = [central state];
 
     switch (cmsNewState) {
-        case CBCentralManagerStatePoweredOff:
+        case CBManagerStatePoweredOff:
         {
-            DLog(@">>>  CBCentralManagerStatePoweredOff  <<<");
+            DLog(@">>>  CBManagerStatePoweredOff  <<<");
             [self clearDevices];
 
             /* Tell user to power ON BT for functionality, but not on first run - the Framework will alert in that instance. */
@@ -1078,32 +1078,32 @@ const CBManagerState kcmsNeverSetState = (CBManagerState)-1;
             break;
         }
 
-        case CBCentralManagerStateUnauthorized:
+        case CBManagerStateUnauthorized:
         {
-            DLog(@">>>  CBCentralManagerStateUnauthorized  <<<");
+            DLog(@">>>  CBManagerStateUnauthorized  <<<");
             /* Tell user the app is not allowed. */
             [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_BLE_NOT_AUTHORIZED object:nil];
             break;
         }
 
-        case CBCentralManagerStateUnknown:
+        case CBManagerStateUnknown:
         {
-            DLog(@">>>  CBCentralManagerStateUnknown  <<<");
+            DLog(@">>>  CBManagerStateUnknown  <<<");
             /* Bad news, let's wait for another event. */
             [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_RADIO_STATE_UNKNOWN object:nil];
             break;
         }
-        case CBCentralManagerStateUnsupported:
+        case CBManagerStateUnsupported:
         {
-            DLog(@">>>  CBCentralManagerStateUnsupported  <<<");
+            DLog(@">>>  CBManagerStateUnsupported  <<<");
             /* Bad news, let's wait for another event. */
             [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_RADIO_STATE_UNSUPPORTED object:nil];
             break;
         }
 
-        case CBCentralManagerStatePoweredOn:
+        case CBManagerStatePoweredOn:
         {
-            DLog(@">>>  CBCentralManagerStatePoweredOn  <<<");
+            DLog(@">>>  CBManagerStatePoweredOn  <<<");
             m_bPendingInit = NO;
             [self loadSavedDevices];
 
@@ -1119,9 +1119,9 @@ const CBManagerState kcmsNeverSetState = (CBManagerState)-1;
             break;
         }
 
-        case CBCentralManagerStateResetting:
+        case CBManagerStateResetting:
         {
-            DLog(@">>>  CBCentralManagerStateResetting  <<<");
+            DLog(@">>>  CBManagerStateResetting  <<<");
             [self clearDevices];
 
             m_bPendingInit = YES;

@@ -407,13 +407,15 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
     }
 }
 
--(double)calcTargetObjectTempFromRaw:(uint16_t)nObjectTemp withAmbient:(double)currAmbient
+-(double)calcTargetObjectTempFromRaw:(int16_t)nObjectTemp withAmbient:(double)currAmbient
 {
     //-- calculate target temperature [Â°C] -
     double Vobj2 = (double)nObjectTemp * 1.0;
     Vobj2 *= 0.00000015625;
 
-    double Tdie2 = currAmbient + 273.15;
+    const double kCorrectionOffsetValue = 273.15;
+
+    double Tdie2 = currAmbient + kCorrectionOffsetValue;
     const double S0 = 6.4E-14;            // Calibration factor
 
     const double a1 = 1.75E-3;
@@ -423,11 +425,11 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
     const double b2 = 4.63E-9;
     const double c2 = 13.4;
     const double Tref = 298.15;
-    double S = S0*(1.0 + a1 *(Tdie2 - Tref)+ a2 * pow((Tdie2 - Tref), 2));
-    double Vos = b0 + b1 * (Tdie2 - Tref) + b2 * pow((Tdie2 - Tref), 2);
-    double fObj = (Vobj2 - Vos) + c2 * pow((Vobj2 - Vos), 2);
-    double tObj = pow(pow(Tdie2, 4) + (fObj/S), 0.25);
-    tObj = (tObj - 273.15);
+    double S = S0*(1.0 + a1 *(Tdie2 - Tref)+ a2 * pow((Tdie2 - Tref), 2.0));
+    double Vos = b0 + b1 * (Tdie2 - Tref) + b2 * pow((Tdie2 - Tref), 2.0);
+    double fObj = (Vobj2 - Vos) + c2 * pow((Vobj2 - Vos), 2.0);
+    double tObj = pow(pow(Tdie2, 4.0) + (fObj/S), 0.25);
+    tObj = (tObj - kCorrectionOffsetValue);
     return tObj;
 }
 
@@ -478,10 +480,10 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
         uint8_t nValuesAr[kREQUIRED_DATA_LEN];
         [dat getBytes:&nValuesAr[0] length:kREQUIRED_DATA_LEN];
 
-        uint16_t nObjectTemp = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[0]];
+        int16_t nObjectTemp = [LEDPayloadUtils int16ValueFromBytes:&nValuesAr[0]];
         uint16_t nAmbientTemp = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[2]];
 
-        DLog(@"- IR Svc: amb:0x%.4X, obj:0x%.4X", nAmbientTemp, nObjectTemp);
+        DLog(@"- IR Svc (raw): amb:0x%.4X, obj:0x%.4X", nAmbientTemp, (uint16_t)nObjectTemp);
 
         // if all values are zero then sensor is off and this is "late" notification of value, ignore it!
         if((nAmbientTemp == nObjectTemp && nObjectTemp == 0))
@@ -496,7 +498,7 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
             //-- calculate target temperature [Â°C] -
             self.objectTemp = [self calcTargetObjectTempFromRaw:nObjectTemp withAmbient:self.ambientTemp];
 
-            DLog(@"- IR Svc: amb:%.1lf, obj:%.1lf", self.ambientTemp, self.objectTemp);
+            DLog(@"- IR Svc (adj): amb:%.1lf, obj:%.1lf", self.ambientTemp, self.objectTemp);
         }
     }
     else if([strArrivingChrstcUUID isEqualToString:kHUMID_DATA_CHRSTC])
@@ -514,12 +516,12 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
 
         uint16_t nTempInC = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[0]];
         uint16_t nRelHumid = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[2]];
-        DLog(@"- Humidity Svc: tempInC:0x%.4X, RH%%:0x%.4X", nTempInC, nRelHumid);
+        DLog(@"- Humidity Svc (raw): tempInC:0x%.4X, RH%%:0x%.4X", nTempInC, nRelHumid);
 
         // if all valules are zero then sensor is off and this is "late" notification of value, ignore it!
         if(nTempInC == nRelHumid && nRelHumid == 0)
         {
-            DLog(@"- IR Svc: {value ignored}");
+            DLog(@"- Humidity Svc: {value ignored}");
         }
         else
         {
@@ -528,7 +530,7 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
             nRelHumid &= ~0x0003; // clear bits [1..0] (status bits)
                                   //-- calculate relative humidity [%RH] --
             self.relHumidityPercent = -6.0 + 125.0/65536.0 * (double)nRelHumid; // RH= -6 + 125 * SRH/2^16
-            DLog(@"- Humidity Svc: TempInC:%.1lf, %%RelHumidity:%.1lf", self.tempInC, self.relHumidityPercent);
+            DLog(@"- Humidity Svc (adj): TempInC:%.1lf, %%RelHumidity:%.1lf", self.tempInC, self.relHumidityPercent);
         }
     }
     else if([strArrivingChrstcUUID isEqualToString:kBARO_DATA_CHRSTC])
@@ -546,9 +548,9 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
 
         NSAssert(m_bHaveCalibrationData == YES, @"ERROR!? Calibration has NOT yet arrived!");
 
-        uint16_t nBaroTemp = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[0]];
+        int16_t nBaroTemp = [LEDPayloadUtils int16ValueFromBytes:&nValuesAr[0]];
         uint16_t nBaroPressure = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[2]];
-        DLog(@"- Baro Svc: tempInC:0x%.4X, Pressure:0x%.4X", nBaroTemp, nBaroPressure);
+        DLog(@"- Barometer Svc (raw): tempInC:0x%.4X, Pressure:0x%.4X", (uint16_t)nBaroTemp, nBaroPressure);
 
         if(nBaroTemp == nBaroPressure && nBaroPressure == 0)
         {
@@ -556,7 +558,7 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
         }
         else
         {
-            uint16_t Tr = nBaroTemp;
+            int16_t Tr = nBaroTemp;
             // ***  Compute temperature in C  ***
             //
             // Formula from application note, rev_X:
@@ -607,7 +609,9 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
 
             // Pressure (Pa) = (Sensitivity * Pr + Offset) / 2^14
             int64_t pres = ((int64_t)(nSensitivity * Pr) + nOffset) >> 14;
+            // Pa to hPa
             self.baroPressure = (double)pres / 100.0;
+            DLog(@"- Barometer Svc (adj): tempInC:%.1lf, Pressure:%.1lf hPa", self.baroTempInC, self.baroPressure);
         }
     }
     else if([strArrivingChrstcUUID isEqualToString:kACCEL_DATA_CHRSTC])
@@ -622,6 +626,7 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
 
         int8_t nValuesAr[kREQUIRED_DATA_LEN];
         [dat getBytes:&nValuesAr[0] length:kREQUIRED_DATA_LEN];
+        DLog(@"- Accelerometer Svc (raw): X(0x%.4X), Y(0x%.4X), Z(0x%.4X)", (uint16_t)nValuesAr[0], (uint16_t)nValuesAr[1], (uint16_t)nValuesAr[2]);
 
         if(nValuesAr[0] == nValuesAr[1] && nValuesAr[1] == nValuesAr[2] && nValuesAr[2] == 0)
         {
@@ -629,9 +634,12 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
         }
         else
         {
-            self.accelerometerX = (nValuesAr[0] / 1.0) / (256.0 / 4.0);
-            self.accelerometerY = (nValuesAr[1] / 1.0) / (256.0 / 4.0);
-            self.accelerometerZ = (nValuesAr[2] / 1.0) / (256.0 / 4.0);
+            // HUH... doc says devide by 64 (spec sheet says devide by 64(2g),32(4g),16(8g) depending upon mode
+            //   when i use 16 i get the expected 1G values !!!  (maybe device is using  +-8g part, not 2g!)
+            self.accelerometerX = (nValuesAr[0] * 1.0) / 16.0;
+            self.accelerometerY = (nValuesAr[1] * 1.0) / 16.0;
+            self.accelerometerZ = (nValuesAr[2] * 1.0) / 16.0;
+            DLog(@"- Accelerometer Svc (adj): X:%.1lf, Y:%.1lf, Z:%.1lf G", self.accelerometerX, self.accelerometerY, self.accelerometerZ);
         }
     }
     else if([strArrivingChrstcUUID isEqualToString:kACCEL_PERI_CHRSTC])
@@ -664,10 +672,10 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
         uint8_t nValuesAr[kREQUIRED_DATA_LEN];
         [dat getBytes:&nValuesAr[0] length:kREQUIRED_DATA_LEN];
 
-        int16_t nGyroX = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[0]];
-        int16_t nGyroY = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[2]];
-        int16_t nGyroZ = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[4]];
-        DLog(@"- Gyro X(0x%.4X), Y(0x%.4X), Z(0x%.4X)", nGyroX, nGyroY, nGyroZ);
+        int16_t nGyroX = [LEDPayloadUtils int16ValueFromBytes:&nValuesAr[0]];
+        int16_t nGyroY = [LEDPayloadUtils int16ValueFromBytes:&nValuesAr[2]];
+        int16_t nGyroZ = [LEDPayloadUtils int16ValueFromBytes:&nValuesAr[4]];
+        DLog(@"- Gyroscope Svc (raw): X(0x%.4X), Y(0x%.4X), Z(0x%.4X)", (uint16_t)nGyroX, (uint16_t)nGyroY, (uint16_t)nGyroZ);
 
         bool bSensorIsOff = YES;
         for (int nValueIdx=0; nValueIdx < kREQUIRED_DATA_LEN-1; nValueIdx++) {
@@ -684,9 +692,10 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
         }
         else
         {
-            self.gyroscopeX = (nGyroX / 1.0) / (65536.0 / 500.0);
-            self.gyroscopeY = (nGyroY / 1.0) / (65536.0 / 500.0);
-            self.gyroscopeZ = (nGyroZ / 1.0) / (65536.0 / 500.0);
+            self.gyroscopeX = (nGyroX * 1.0) / (65536.0 / 500.0);
+            self.gyroscopeY = (nGyroY * 1.0) / (65536.0 / 500.0);
+            self.gyroscopeZ = (nGyroZ * 1.0) / (65536.0 / 500.0);
+            DLog(@"- Gyroscope Svc (adj): X:%.1lf, Y:%.1lf, Z:%.1lf degr/s", self.gyroscopeX, self.gyroscopeY, self.gyroscopeZ);
         }
     }
     else if([strArrivingChrstcUUID isEqualToString:kMAGNETO_DATA_CHRSTC])
@@ -702,10 +711,10 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
         uint8_t nValuesAr[kREQUIRED_DATA_LEN];
         [dat getBytes:&nValuesAr[0] length:kREQUIRED_DATA_LEN];
 
-        int16_t nMagnetoX = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[0]];
-        int16_t nMagnetoY = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[2]];
-        int16_t nMagnetoZ = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[4]];
-        DLog(@"- Magneto X(0x%.4X), Y(0x%.4X), Z(0x%.4X)", nMagnetoX, nMagnetoY, nMagnetoZ);
+        int16_t nMagnetoX = [LEDPayloadUtils int16ValueFromBytes:&nValuesAr[0]];
+        int16_t nMagnetoY = [LEDPayloadUtils int16ValueFromBytes:&nValuesAr[2]];
+        int16_t nMagnetoZ = [LEDPayloadUtils int16ValueFromBytes:&nValuesAr[4]];
+        DLog(@"- Magnetometer Svc (raw): X(0x%.4X), Y(0x%.4X), Z(0x%.4X)", (uint16_t)nMagnetoX, (uint16_t)nMagnetoY, (uint16_t)nMagnetoZ);
 
         bool bSensorIsOff = YES;
         for (int nValueIdx=0; nValueIdx < kREQUIRED_DATA_LEN-1; nValueIdx++) {
@@ -725,7 +734,8 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
             self.magnetometerX = (nMagnetoX * 1.0) / (65536.0 / 2000.0);
             self.magnetometerY = (nMagnetoY * 1.0) / (65536.0 / 2000.0);
             self.magnetometerZ = (nMagnetoZ * 1.0) / (65536.0 / 2000.0);
-        }
+            DLog(@"- Magnetometer Svc (adj): X:%.1lf, Y:%.1lf, Z:%.1lf uT", self.magnetometerX, self.magnetometerY, self.magnetometerZ);
+       }
     }
     else if([strArrivingChrstcUUID isEqualToString:kMAGNETO_PERI_CHRSTC])
     {
@@ -761,10 +771,10 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
         m_nC2 = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[2]];
         m_nC3 = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[4]];
         m_nC4 = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[6]];
-        m_nC5 = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[8]];
-        m_nC6 = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[10]];
-        m_nC7 = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[12]];
-        m_nC8 = [LEDPayloadUtils uint16ValueFromBytes:&nValuesAr[14]];
+        m_nC5 = [LEDPayloadUtils int16ValueFromBytes:&nValuesAr[8]];
+        m_nC6 = [LEDPayloadUtils int16ValueFromBytes:&nValuesAr[10]];
+        m_nC7 = [LEDPayloadUtils int16ValueFromBytes:&nValuesAr[12]];
+        m_nC8 = [LEDPayloadUtils int16ValueFromBytes:&nValuesAr[14]];
         m_bHaveCalibrationData = YES;
 
         DLog(@"- loaded Calibration Coefficients");
@@ -847,12 +857,13 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
     }
 
     // unregister notification handlers
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNOTIFICATION_ADD_BLE_DEVICE object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNOTIFICATION_DEVICE_SERVICES_DISCOVERED object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNOTIFICATION_DEVICE_CHARACTERISTICS_DISCOVERED object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNOTIFICATION_DEVICE_CHARACTERISTIC_DESCRIPTORS_DISCOVERED object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNOTIFICATION_DEVICE_SCAN_STARTED object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNOTIFICATION_DEVICE_SCAN_STOPPED object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNOTIFICATION_DEVICE_UPDATED_CHARACTERISTIC_VALUE object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNOTIFICATION_DEVICE_UPDATED_CHARACTERISTIC_NOTIF_STATE object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNOTIFICATION_CONNECT_BLE_DEVICE_SUCCESS object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNOTIFICATION_ALL_DEVICES_REMOVED object:nil];
+
 }
 
 #pragma mark -  PROTOCOL <NSKeyValueObserving> Methods
@@ -943,8 +954,8 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
         }
         else if([keyPath isEqualToString:kKeypathGyroscopeEnable])
         {
-            // build payload value
-            Byte nValue = (self.isGyroscopeEnabled) ? 1: 0;
+            // build payload value (0=3axis off, 7=3axis on)
+            Byte nValue = (self.isGyroscopeEnabled) ? 7: 0;
             NSData *dat = [NSData dataWithBytes:&nValue length:1];
             // write to characteristic of peripheral
             [self writeValue:dat forCharacteristicUUIDString:kGYRO_CONF_CHRSTC];

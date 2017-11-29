@@ -12,7 +12,22 @@
 
 ### Changelog
 
-**— Update: 2017 Mar: (in-progress)**
+**— Update: 2017 Nov 29:**
+
+- Update to latest Xcode 9.1 SDKs
+- Address compiler warnings.
+- Validate and fix project compilation settings.
+
+-   **LowEnergyManager**:
+- Update to latest CoreBluetooth API
+
+-   **Demo App**:
+-   Repair Various readings due to sign conversion mistakes
+-   Turned on Y and Z gyros (was only turning on X)
+-   Fix various Storyboard / layout problems...
+-   Add project background mode indicating need for BTLE accessory use
+
+**— Update: 2017 Mar:**
 
 -   LowEnergyManager: Update to latest 
 

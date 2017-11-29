@@ -11,5 +11,6 @@
 @interface LEDPayloadUtils : NSObject
 
 +(uint16_t)uint16ValueFromBytes:(uint8_t *)bytesAr;
++(int16_t)int16ValueFromBytes:(uint8_t *)bytesAr;
 
 @end

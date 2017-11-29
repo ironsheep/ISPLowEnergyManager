@@ -32,6 +32,7 @@
 		DC42947919A7EEEC00763CF3 /* libISPLowEnergyManager.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DC42947419A7EE9700763CF3 /* libISPLowEnergyManager.a */; };
 		DC78EB3F19A8313A003417C7 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = DC78EB3E19A8313A003417C7 /* MBProgressHUD.m */; };
 		DC78EB4219A8403A003417C7 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = DC78EB4119A8403A003417C7 /* README.md */; };
+		DCDBF9C41FCF729B00005FAB /* LaunchImage.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DCDBF9C31FCF729B00005FAB /* LaunchImage.storyboard */; };
 		DCF1FCB419DF2A0000BC038C /* LEDViewControllerBase.m in Sources */ = {isa = PBXBuildFile; fileRef = DCF1FCB319DF2A0000BC038C /* LEDViewControllerBase.m */; };
 		DCF1FCB719DF39DD00BC038C /* LEDDevicePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = DCF1FCB619DF39DD00BC038C /* LEDDevicePicker.m */; };
 /* End PBXBuildFile section */
@@ -107,6 +108,7 @@
 		DC78EB3D19A8313A003417C7 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
 		DC78EB3E19A8313A003417C7 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
 		DC78EB4119A8403A003417C7 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		DCDBF9C31FCF729B00005FAB /* LaunchImage.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchImage.storyboard; sourceTree = "<group>"; };
 		DCF1FCB219DF2A0000BC038C /* LEDViewControllerBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LEDViewControllerBase.h; sourceTree = "<group>"; };
 		DCF1FCB319DF2A0000BC038C /* LEDViewControllerBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LEDViewControllerBase.m; sourceTree = "<group>"; };
 		DCF1FCB519DF39DD00BC038C /* LEDDevicePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEDDevicePicker.h; path = Pickers/LEDDevicePicker.h; sourceTree = "<group>"; };
@@ -236,6 +238,7 @@
 			children = (
 				DC42942D19A7EC5B00763CF3 /* Main_iPhone.storyboard */,
 				DC42943019A7EC5B00763CF3 /* Main_iPad.storyboard */,
+				DCDBF9C31FCF729B00005FAB /* LaunchImage.storyboard */,
 			);
 			name = Storyboard;
 			sourceTree = "<group>";
@@ -354,11 +357,16 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = LED;
-				LastUpgradeCheck = 0820;
+				LastUpgradeCheck = 0910;
 				ORGANIZATIONNAME = "Iron Sheep Productions, LLC";
 				TargetAttributes = {
 					DC42941719A7EC5B00763CF3 = {
 						DevelopmentTeam = T67FW2JCJW;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
 					};
 					DC42943E19A7EC5B00763CF3 = {
 						TestTargetID = DC42941719A7EC5B00763CF3;
@@ -415,6 +423,7 @@
 				DC42943219A7EC5B00763CF3 /* Main_iPad.storyboard in Resources */,
 				DC42943A19A7EC5B00763CF3 /* Images.xcassets in Resources */,
 				DC78EB4219A8403A003417C7 /* README.md in Resources */,
+				DCDBF9C41FCF729B00005FAB /* LaunchImage.storyboard in Resources */,
 				DC42942F19A7EC5B00763CF3 /* Main_iPhone.storyboard in Resources */,
 				DC42942619A7EC5B00763CF3 /* InfoPlist.strings in Resources */,
 			);
@@ -518,14 +527,20 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -548,7 +563,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -563,14 +578,20 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -586,7 +607,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -597,13 +618,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				DEVELOPMENT_TEAM = T67FW2JCJW;
 				FRAMEWORK_SEARCH_PATHS = "$(CONFIGURATION_BUILD_DIR)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "LowEnergyDemo/LowEnergyDemo-Prefix.pch";
 				INFOPLIST_FILE = "LowEnergyDemo/LowEnergyDemo-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "biz.ironsheep.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -615,13 +635,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				DEVELOPMENT_TEAM = T67FW2JCJW;
 				FRAMEWORK_SEARCH_PATHS = "$(CONFIGURATION_BUILD_DIR)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "LowEnergyDemo/LowEnergyDemo-Prefix.pch";
 				INFOPLIST_FILE = "LowEnergyDemo/LowEnergyDemo-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "biz.ironsheep.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";

@@ -292,8 +292,27 @@
             [self.HUD hideAnimated:YES];
         }
 
-        UIAlertView *avAlert = [[UIAlertView alloc] initWithTitle:@"BTLE Demo: Alert" message:@"No TI Sensor Tag devices found!" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles: @"Try Again", nil];
-        [avAlert show];
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"BTLE Demo: Alert"
+                                                                                 message:@"No TI Sensor Tag devices found!"
+                                                                          preferredStyle:UIAlertControllerStyleAlert];
+
+        UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDefault
+                                                            handler:^(UIAlertAction * action) {
+                                                                DLog(@"- Cancel");
+                                                            }];
+        UIAlertAction* tryAgainAction = [UIAlertAction actionWithTitle:@"Try Again" style:UIAlertActionStyleDefault
+                                                           handler:^(UIAlertAction * action) {
+                                                               DLog(@"- Trying Again");
+                                                               // user want's to rescan for devices!   Do it!
+                                                               [self showHuntingForSensorTags];
+                                                               [self.sensorTag rescanForTags];
+                                                           }];
+        [alertController addAction:tryAgainAction];
+        [alertController addAction:cancelAction];
+
+        [self presentViewController:alertController animated:YES completion:^{
+            DLog(@"- completed");
+        }];
     }
     else
     {
@@ -329,23 +348,6 @@
     CBPeripheral *selectedDevice = [self.cbpPeripheralsFound objectAtIndex:index];
     self.lblDeviceName.text = selectedDevice.name;
     [self.sensorTag selectTag:selectedDevice];
-}
-
-#pragma mark PROTOCOL <UIAlertViewDelegate> Methods
-
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    BOOL bDidCancel = (buttonIndex == alertView.cancelButtonIndex) ? YES : NO;
-#ifdef DEBUG
-    NSString *strYN = (bDidCancel) ? @"YES" : @"no";
-#endif
-    DLog(@"- user canceled? [%@]", strYN);
-    if(!bDidCancel)
-    {
-        // user want's to rescan for devices!   Do it!
-        [self showHuntingForSensorTags];
-        [self.sensorTag rescanForTags];
-    }
 }
 
 @end

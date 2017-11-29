@@ -18,4 +18,9 @@
     return nValue;
 }
 
++(int16_t)int16ValueFromBytes:(uint8_t*)bytesAr
+{
+    return (int16_t)[self uint16ValueFromBytes:bytesAr];
+}
+
 @end

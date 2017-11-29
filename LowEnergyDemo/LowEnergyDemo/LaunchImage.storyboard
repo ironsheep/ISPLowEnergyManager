@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="soO-UV-PVI">
+    <device id="retina5_5" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="Oct-oi-7jq">
+            <objects>
+                <viewController id="soO-UV-PVI" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="d7P-KM-Axx">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" image="CompanyLogo" translatesAutoresizingMaskIntoConstraints="NO" id="7n1-Kd-UOP" userLabel="Image View - LOGO">
+                                <rect key="frame" x="239" y="632" width="175" height="104"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="175" id="Gv3-qb-AvX"/>
+                                    <constraint firstAttribute="width" secondItem="7n1-Kd-UOP" secondAttribute="height" multiplier="175:104" id="e38-Hu-Dq9"/>
+                                </constraints>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="7n1-Kd-UOP" firstAttribute="bottom" secondItem="Mfw-VI-KXX" secondAttribute="bottom" id="JUf-f3-bHy"/>
+                            <constraint firstItem="7n1-Kd-UOP" firstAttribute="trailing" secondItem="Mfw-VI-KXX" secondAttribute="trailing" id="OV4-wF-8D9"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="Mfw-VI-KXX"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="n35-j3-YdI" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-215" y="23"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="CompanyLogo" width="175" height="104"/>
+    </resources>
+</document>
