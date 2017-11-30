@@ -369,10 +369,10 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
     self.deviceName = self.cbpTISensorTag.name;
     //[self hideScanIndicator];
 
-    DLog(@"*** Request STOP SCAN")
+    DLog(@"*** Request STOP SCAN");
     [self.btLEManager stopScanning];
 
-    DLog(@"*** Now connect to device")
+    DLog(@"*** Now connect to device");
     [self.btLEManager connectPeripheral:self.cbpTISensorTag];
 }
 
@@ -387,7 +387,7 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
     NSArray *cbpPanelsFoundAr = notification.object;
     if(cbpPanelsFoundAr.count == 0)
     {
-        DLog(@"*** No TI devices found!")
+        DLog(@"*** No TI devices found!");
         [[NSNotificationCenter defaultCenter] postNotificationName:kPERIPHERAL_SCAN_ENDED_NOTIFICATION object:nil];
     }
     else if(cbpPanelsFoundAr.count == 1)
@@ -395,14 +395,14 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
         //DLog(@"*** Request STOP SCAN")
         //[self.btLEManager stopScanning];   // this is already done!
 
-        DLog(@"*** Now connect to only TI device")
+        DLog(@"*** Now connect to only TI device");
         [self selectDevice:[cbpPanelsFoundAr objectAtIndex:0]];
 
         //[[NSNotificationCenter defaultCenter] postNotificationName:kPERIPHERAL_SCAN_ENDED_NOTIFICATION object:notification.object];
     }
     else
     {
-        DLog(@"*** Found more than one TI device =[%@]!", cbpPanelsFoundAr)
+        DLog(@"*** Found more than one TI device =[%@]!", cbpPanelsFoundAr);
         // have many radios but up dialog so can select one!
         [[NSNotificationCenter defaultCenter] postNotificationName:kPERIPHERAL_SCAN_ENDED_NOTIFICATION object:notification.object];
     }
@@ -847,7 +847,7 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
 
 - (void)applicationWillTerminate:(NSNotification *)notification
 {
-    DLog(@"*** Now disconnect from panel")
+    DLog(@"*** Now disconnect from panel");
     [self.btLEManager disconnectPeripheral:self.cbpTISensorTag];
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 
