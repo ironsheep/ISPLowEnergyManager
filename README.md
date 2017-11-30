@@ -26,7 +26,7 @@
 -   **--Demo App--**:
 -   BUGFIX Repair Various readings due to sign conversion mistakes
 -   BUGFIX Turned on Y and Z gyros (was only turning on X)
--   BUGFIX Adjust Accel. value scaling... appears that our device is using +/-8g device (+/- 2g device)
+-   BUGFIX Adjust Accel. value scaling... appears that our device is using +/-8g device (NOT a +/- 2g device)
 -   Fix various Storyboard / layout problems...
 -   Add project background mode indicating need for BTLE accessory use
 
