@@ -34,7 +34,7 @@ typedef enum _ePeripheralQueryState : NSInteger {
     BOOL m_bIsDeviceScanActive;
     BOOL m_bIsServicesDiscoveryEnabled;
     CBManagerState m_cmsPreviousState;
- }
+}
 
 
 #pragma mark -- PRIVATE PROPERTIES
@@ -189,6 +189,11 @@ const NSUInteger knDefaultNumberOfDevicesToLocate = 1;  // connect with the firs
         self.foundServices = [NSMutableArray array];
         self.foundCharacteristics = [NSMutableArray array];
         self.foundDescriptors = [NSMutableArray array];
+
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(handleAppTermination:)
+                                                     name:@"UIApplicationWillTerminateNotification"
+                                                   object:nil];
     }
     return self;
 }
@@ -197,6 +202,8 @@ const NSUInteger knDefaultNumberOfDevicesToLocate = 1;  // connect with the firs
 - (void) dealloc
 {
     DLog(@"- self=[%@]", self);
+
+    [self removeObserver:self forKeyPath:@"UIApplicationWillTerminateNotification"];
 
     // We are a singleton and as such, dealloc shouldn't be called.
     NSAssert(false, @"dealloc should NOT be called on singleton!!!");
@@ -1034,10 +1041,10 @@ const NSUInteger knDefaultNumberOfDevicesToLocate = 1;  // connect with the firs
         }
     }
     DLog(@"- returning svc UUID=0x%@ for characteristic UUID=0x%@", strDesiredServiceUUID, characteristicUUIDString);
-//    if(strDesiredServiceUUID == nil)
-//    {
-//        NSAssert(strDesiredServiceUUID != nil, @"[CODE] why don't we know this characteristic UUID or service for it!");
-//    }
+    //    if(strDesiredServiceUUID == nil)
+    //    {
+    //        NSAssert(strDesiredServiceUUID != nil, @"[CODE] why don't we know this characteristic UUID or service for it!");
+    //    }
     return strDesiredServiceUUID;
 }
 
@@ -1142,10 +1149,13 @@ const CBManagerState kcmsNeverSetState = (CBManagerState)-1;
     peripheral.latestRSSI = RSSI;
 
     BOOL bWantThisPeripheral = NO;
-    if(self.searchDeviceName != nil)
+    if(self.searchDeviceName != nil || self.alternateSearchDeviceName != nil)
     {
         if([peripheral.name.lowercaseString isEqualToString:self.searchDeviceName.lowercaseString])
         {
+            bWantThisPeripheral = YES;
+        }
+        else if([peripheral.name.lowercaseString isEqualToString:self.alternateSearchDeviceName.lowercaseString]) {
             bWantThisPeripheral = YES;
         }
     }
@@ -1416,7 +1426,7 @@ const CBManagerState kcmsNeverSetState = (CBManagerState)-1;
             //
             [self setEngineIdle];
         }
-   }
+    }
     else
     {
         DLog(@"-(?HUH?) NO included Services (count=0?) found for peripheral=%@", peripheral);
@@ -1568,7 +1578,7 @@ const CBManagerState kcmsNeverSetState = (CBManagerState)-1;
     [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_DEVICE_WROTE_DESCRIPTOR_VALUE object:infoObject];
 }
 
-#pragma mark --> PROTOCOL <NSTimerDelegate> Methods
+#pragma mark - PROTOCOL <NSTimerDelegate> Methods
 
 - (void)handleExpirationOfTimer:(NSTimer *)timer
 {
@@ -1577,6 +1587,15 @@ const CBManagerState kcmsNeverSetState = (CBManagerState)-1;
     [self stopScanning];
 }
 
+- (void)handleAppTermination:(NSNotification *)notification
+{
+    DLog(@"- *** notification=[%@]", notification);
 
+    //  if our User hasn't disconnected, then let's do so now!!!
+    //
+    if(self.cbpConnectedDevice != nil) {
+        [self disconnectPeripheral:self.cbpConnectedDevice];
+    }
+}
 
 @end

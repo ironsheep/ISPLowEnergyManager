@@ -183,6 +183,7 @@ NSString *kPERIPHERAL_SCAN_ENDED_NOTIFICATION = @"PANEL_NOTIFICATION_PERIPHERAL_
         // if want TI Sensor Tag object:
         self.btLEManager.searchUUID = nil; //kGENERIC_ACCESS_SVC;  //kIR_TEMPERATURE_SVC;
         self.btLEManager.searchDeviceName = @"TI BLE Sensor Tag";
+        self.btLEManager.alternateSearchDeviceName = @"Sensor Tag";
         self.btLEManager.numberOfDevicesToLocate = 2;
         self.btLEManager.searchDurationInSeconds = 3.0;
 

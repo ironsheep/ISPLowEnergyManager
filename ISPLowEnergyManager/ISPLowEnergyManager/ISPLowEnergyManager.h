@@ -21,6 +21,7 @@
 @property (strong, nonatomic) NSArray *servicesWithIncludes;
 @property (strong, nonatomic) NSString *searchUUID;
 @property (strong, nonatomic) NSString *searchDeviceName;
+@property (strong, nonatomic) NSString *alternateSearchDeviceName;
 @property (assign, nonatomic) NSTimeInterval searchDurationInSeconds;
 @property (assign, nonatomic) NSUInteger numberOfDevicesToLocate;
 @property (strong, nonatomic, readonly) NSArray *peripherals;
