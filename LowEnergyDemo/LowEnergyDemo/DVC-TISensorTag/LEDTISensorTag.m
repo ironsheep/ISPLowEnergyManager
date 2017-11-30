@@ -11,8 +11,6 @@
 
 #import <CoreBluetooth/CoreBluetooth.h>
 #import <ISPLowEnergyManager/ISPLowEnergyManager.h>
-#import <ISPLowEnergyManager/ISPNotificationConsts.h>
-#import <ISPLowEnergyManager/ISPPeripheralTriadParameter.h>
 
 #import "LEDTISensorTag.h"
 #import "LEDGattConsts.h"

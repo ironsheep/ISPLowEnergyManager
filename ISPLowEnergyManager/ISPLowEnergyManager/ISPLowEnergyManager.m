@@ -9,9 +9,7 @@
 #import "ISPLowEnergyManager.h"
 #import "CBPeripheral+Methods.h"
 #import "CBService+Methods.h"
-#import "ISPPeripheralTriadParameter.h"
 #import "CustomAlertView.h"
-#import "ISPNotificationConsts.h"
 
 
 #pragma mark CLASS LEPBluetoothManager - PRIVATE Interface

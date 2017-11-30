@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreBluetooth/CoreBluetooth.h>
+#import "ISPPeripheralTriadParameter.h"
+#import "ISPNotificationConsts.h"
 
 #pragma mark CLASS LEPBluetoothManager - PUBLIC Interface
 
