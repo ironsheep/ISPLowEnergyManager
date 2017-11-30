@@ -96,14 +96,15 @@ typedef enum _ePeripheralQueryState : NSInteger {
 
 + (id) sharedInstance
 {
-    static ISPLowEnergyManager	*this	= nil;
+    static ISPLowEnergyManager *lem_sharedInstance = nil;
+    static dispatch_once_t onceToken;
 
-    if (!this) {
+    dispatch_once(&onceToken, ^{
         DLog(@"");
-        this = [[ISPLowEnergyManager alloc] init];
-    }
+        lem_sharedInstance = [[ISPLowEnergyManager alloc] init];
+    });
 
-    return this;
+    return lem_sharedInstance;
 }
 
 - (NSString *)engineStateString
