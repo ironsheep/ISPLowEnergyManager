@@ -12,6 +12,14 @@
 
 ### Changelog
 
+**— Update: 2020 Feb 15:**
+
+- Update to latest Xcode 11.3.1 SDKs
+- Validate and fix project compilation settings.
+- BUGFIX Repair bad calls to base class methods (found during analyze)
+- Fix deprecations 
+- Fix compiler warnings (loss of precision)
+
 **— Update: 2017 Nov 29:**
 
 - Update to latest Xcode 9.1 SDKs
@@ -21,7 +29,7 @@
 
 -   **--LowEnergyManager--**:
 -   Update to latest CoreBluetooth API
--   BUGFIX Force release of peripheral if user has not by time app terminates!
+-   BUGFIX Force release of peripheral, if user has not, by time app terminates!
 
 -   **--Demo App--**:
 -   BUGFIX Repair Various readings due to sign conversion mistakes
