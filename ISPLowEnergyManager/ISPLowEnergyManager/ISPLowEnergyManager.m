@@ -590,7 +590,7 @@ const NSUInteger knDefaultNumberOfDevicesToLocate = 1;  // connect with the firs
 
 - (void)scheduleWriteOfData:(NSData *)data forCharacteristicUUID:(NSString *)UUIDString type:(CBCharacteristicWriteType)type
 {
-    NSDictionary *dctNextEntry = @{ UUIDString: data, @"WriteType": [NSNumber numberWithInt:type] };
+    NSDictionary *dctNextEntry = @{ UUIDString: data, @"WriteType": [NSNumber numberWithInteger:type] };
     NSMutableArray *pendingOperations = [[self.dctPendingOperationsByCharacteristicUUID objectForKey:UUIDString] mutableCopy];
     if(pendingOperations != nil)
     {
@@ -1237,17 +1237,18 @@ const CBManagerState kcmsNeverSetState = (CBManagerState)-1;
     [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_DEVICE_INVALIDATED_SERVICES object:peripheral];
 }
 
-- (void)peripheralDidUpdateRSSI:(CBPeripheral *)peripheral error:(NSError *)error
-{
-#ifdef DEBUG
-    NSString *strErrorInd = [self descriptionOfError:error];
-#endif
-    DLog(@"- RX UUID=0x%@ %@", peripheral.UUIDString, strErrorInd);
-
-    ISPPeripheralTriadParameter *infoObject = [[ISPPeripheralTriadParameter alloc] initWithPeripheral:peripheral parameter:nil error:error];
-    [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_DEVICE_UPDATED_RSSI object:infoObject];
-    DLog(@"- EXIT");
-}
+// NS_DEPRECATED(10_7, 10_13, 5_0, 8_0);
+//- (void)peripheralDidUpdateRSSI:(CBPeripheral *)peripheral error:(NSError *)error
+//{
+//#ifdef DEBUG
+//    NSString *strErrorInd = [self descriptionOfError:error];
+//#endif
+//    DLog(@"- RX UUID=0x%@ %@", peripheral.UUIDString, strErrorInd);
+//
+//    ISPPeripheralTriadParameter *infoObject = [[ISPPeripheralTriadParameter alloc] initWithPeripheral:peripheral parameter:nil error:error];
+//    [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_DEVICE_UPDATED_RSSI object:infoObject];
+//    DLog(@"- EXIT");
+//}
 
 - (void)peripheral:(CBPeripheral *)peripheral didReadRSSI:(NSNumber *)RSSI error:(NSError *)error
 {

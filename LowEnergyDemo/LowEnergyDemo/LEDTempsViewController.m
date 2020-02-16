@@ -127,7 +127,7 @@
 -(void)viewWillDisappear:(BOOL)animated
 {
     DLog(@"");
-    [super viewWillAppear:animated];
+    [super viewWillDisappear:animated];
 
     // disnable notifcations
     self.sensorTag.tempNotify = NO;

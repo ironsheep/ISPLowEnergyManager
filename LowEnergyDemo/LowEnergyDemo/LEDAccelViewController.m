@@ -129,7 +129,7 @@
 -(void)viewWillDisappear:(BOOL)animated
 {
     DLog(@"");
-    [super viewWillAppear:animated];
+    [super viewWillDisappear:animated];
 
     // disable notifcations
     self.sensorTag.accelerometerNotify = NO;
