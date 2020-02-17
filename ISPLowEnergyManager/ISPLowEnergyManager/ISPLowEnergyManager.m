@@ -5,11 +5,12 @@
 //  Created by Stephen M Moraco on 03/12/13.
 //  Copyright (c) 2013 Iron Sheep Productions, LLC. All rights reserved.
 //
+#import <UIKit/UIKit.h>
 
 #import "ISPLowEnergyManager.h"
 #import "CBPeripheral+Methods.h"
 #import "CBService+Methods.h"
-#import "CustomAlertView.h"
+//#import "CustomAlertView.h"
 
 
 #pragma mark CLASS LEPBluetoothManager - PRIVATE Interface
@@ -1196,14 +1197,29 @@ const CBManagerState kcmsNeverSetState = (CBManagerState)-1;
 }
 
 - (void)centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error {
+    UIWindow *keyWindow = [[UIApplication sharedApplication] keyWindow];
+    UIViewController *topVC = keyWindow.rootViewController;
+
     if (error != nil) {
         DLog(@"*** RX UUID=[0x%@] with ERROR", peripheral.UUIDString);
         NSArray *disconnectFailureArray = [NSArray arrayWithObjects:error, peripheral, nil];
         [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_DISCONNECT_BLE_DEVICE_FAILURE object:disconnectFailureArray];
 
         //UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Disconnect Error", @"") message:error.localizedDescription delegate:self cancelButtonTitle:NSLocalizedString(@"OK",@"") otherButtonTitles: nil];
-        CustomAlertView *alert = [[CustomAlertView alloc] initWithTitle:NSLocalizedString(@"Disconnect Error", @"") message:error.localizedDescription delegate:self cancelButtonTitle:NSLocalizedString(@"OK",@"") otherButtonTitles: nil];
-        [alert show];
+//        CustomAlertView *alert = [[CustomAlertView alloc] initWithTitle:NSLocalizedString(@"Disconnect Error", @"") message:error.localizedDescription delegate:self cancelButtonTitle:NSLocalizedString(@"OK",@"") otherButtonTitles: nil];
+//        [alert show];
+
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:@"%@: Alert - Disconnect Error", @"ISPLowEnergyManager"]
+                                                                                 message:error.localizedDescription
+                                                                          preferredStyle:UIAlertControllerStyleAlert];
+
+        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+                                                             handler:^(UIAlertAction * action) {
+            DLog(@"- OK");
+        }];
+        [alertController addAction:cancelAction];
+
+        [topVC presentViewController:alertController animated:YES completion:nil];
     }
     else
     {
@@ -1211,8 +1227,19 @@ const CBManagerState kcmsNeverSetState = (CBManagerState)-1;
         [[NSNotificationCenter defaultCenter] postNotificationName:kNOTIFICATION_DISCONNECT_BLE_DEVICE_SUCCESS object:peripheral];
 
         //UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Disconnected", @"") message:peripheral.name delegate:self cancelButtonTitle:NSLocalizedString(@"OK",@"") otherButtonTitles: nil];
-        CustomAlertView *alert = [[CustomAlertView alloc] initWithTitle:NSLocalizedString(@"Disconnected", @"") message:peripheral.name delegate:self cancelButtonTitle:NSLocalizedString(@"OK",@"") otherButtonTitles: nil];
-        [alert show];
+//        CustomAlertView *alert = [[CustomAlertView alloc] initWithTitle:NSLocalizedString(@"Disconnected", @"") message:peripheral.name delegate:self cancelButtonTitle:NSLocalizedString(@"OK",@"") otherButtonTitles: nil];
+//        [alert show];
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:@"%@: Alert - Disconnected", @"ISPLowEnergyManager"]
+                                                                                 message:peripheral.name
+                                                                          preferredStyle:UIAlertControllerStyleAlert];
+
+        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+                                                             handler:^(UIAlertAction * action) {
+            DLog(@"- OK");
+        }];
+        [alertController addAction:cancelAction];
+
+        [topVC presentViewController:alertController animated:YES completion:nil];
     }
     self.cbpConnectedDevice = nil;
 
